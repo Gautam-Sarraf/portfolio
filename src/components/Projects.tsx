@@ -19,7 +19,7 @@ const Projects: React.FC = () => {
         "Built an internal chat and collaboration tool using React.js, Node.js, and MongoDB to streamline organizational communication. Implemented secure real-time messaging, group chats, file sharing, and user presence indicators. Developed authentication and role-based access control to ensure secure team interactions.",
       tools: ["React.js", "Node.js", "MongoDB", "WebSockets", "JWT"],
       icon: "👥",
-      github: "#",
+      github: "https://github.com/Gautam-Sarraf/TeamSphere",
       demo: "#",
     },
     {
