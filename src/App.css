@@ -223,10 +223,6 @@ body {
     inset 0 0 20px rgba(0, 255, 0, 0.1);
   animation: floatNav 3s ease-in-out infinite;
   max-width: 900px;
-  left: 50%;
-  right: auto;
-  margin-left: auto;
-  margin-right: auto;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -1163,6 +1159,7 @@ body {
     font-size: 10px;
     padding: 0 2vw;
   }
+
   .navbar {
     position: relative !important;
     top: 0 !important;
@@ -1174,15 +1171,17 @@ body {
     margin: 0 auto 16px auto !important;
     border-radius: 0 0 18px 18px !important;
     padding: 10px 0 !important;
-    box-shadow: 0 2px 16px rgba(0,255,0,0.1);
+    box-shadow: 0 2px 16px rgba(0, 255, 0, 0.1);
     z-index: 1000;
   }
+
   .nav-container {
     flex-direction: column;
     align-items: center;
     gap: 10px;
     width: 100%;
   }
+
   .nav-links {
     flex-direction: column;
     gap: 16px;
@@ -1191,6 +1190,7 @@ body {
     padding: 0;
     margin: 0;
   }
+
   .nav-links a {
     width: 90vw;
     max-width: 350px;
@@ -1201,14 +1201,19 @@ body {
     margin: 0 auto;
     display: block;
   }
+
   .pixel-border {
     border-width: 2px;
   }
+
   .project-image {
     height: 100px;
     min-width: 0;
   }
-  h1, h2, h3 {
+
+  h1,
+  h2,
+  h3 {
     font-size: 1.2em;
   }
 }
@@ -1220,17 +1225,21 @@ body {
     font-size: 11px;
     padding: 0 4vw;
   }
+
   .main-content {
     max-width: 95vw;
     padding: 0 4vw;
   }
+
   .section {
     padding: 30px 10px;
     min-height: 70vh;
   }
+
   .nav-links {
     gap: 18px;
   }
+
   .project-image {
     height: 120px;
   }
@@ -1242,17 +1251,21 @@ body {
     font-size: 12px;
     padding: 0 6vw;
   }
+
   .main-content {
     max-width: 90vw;
     padding: 0 6vw;
   }
+
   .section {
     padding: 40px 20px;
     min-height: 80vh;
   }
+
   .nav-links {
     gap: 22px;
   }
+
   .project-image {
     height: 140px;
   }
