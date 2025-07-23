@@ -24,13 +24,13 @@ const Projects: React.FC = () => {
     },
     {
       id: 2,
-      title: "AI Chat App",
+      title: "AIPal",
       description:
         "Built an AI-powered real-time chat application for web using React and OpenAI's API, enabling dynamic user interactions. Implemented WebSocket support for seamless two-way communication and instant message delivery. Integrated MongoDB for efficient message storage and chat history retrieval.",
       tools: ["React", "OpenAI API", "WebSockets", "MongoDB", "Node.js"],
       icon: "🤖",
       github: "https://github.com/Gautam-Sarraf/Ai-chat",
-      demo: "https://starlit-kringle-81141e.netlify.app/",
+      demo: "https://aipal.netlify.app/",
     },
   ];
 
