@@ -32,6 +32,26 @@ const Projects: React.FC = () => {
       github: "https://github.com/Gautam-Sarraf/Ai-chat",
       demo: "https://aipal.netlify.app/",
     },
+    {
+      id: 3,
+      title: "GameX",
+      description:
+        "GameX is a web platform where users can explore upcoming gaming tournaments and easily register through a simple, interactive form. It’s designed with an engaging UI to give gamers a smooth experience while browsing events and signing up.",
+      tools: ["HTML", "CSS", "JavaScript", "WEB3Form"],
+      icon: "🎮",
+      github: "",
+      demo: "https://gamingwebfin.netlify.app/",
+    },
+    {
+      id: 4,
+      title: "Inky",
+      description:
+        "Inky is a lightweight digital drawing platform, built with HTML, CSS, and JavaScript, that works like a simplified MS Paint. It allows users to draw, paint, and create sketches directly in the browser using an intuitive canvas-based interface.",
+      tools: ["HTML", "CSS", "JavaScript"],
+      icon: "🖼️",
+      github: "https://github.com/Gautam-Sarraf/Inky",
+      demo: "https://inky-me.netlify.app/",
+    },
   ];
 
   return (
