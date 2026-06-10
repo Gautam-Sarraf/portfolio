@@ -1,237 +1,236 @@
-import React, { useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
-import { SectionHeader } from './About';
-import { Briefcase, Calendar, ChevronRight } from 'lucide-react';
+import React from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ShieldCheck, Calendar, Zap, Terminal, ChevronRight } from 'lucide-react';
+import { spaceAudio } from '../utils/audio';
+import { TIMELINE_STATIONS } from './SpaceCanvas';
 
-const EXPERIENCES = [
+interface ExperienceProps {
+  selectedIndex: number;
+  setSelectedIndex: (idx: number) => void;
+}
+
+const EXPERIENCE_REPORTS = [
   {
-    role: 'Frontend Developer',
-    company: 'Current Role',
-    period: '2025 – Present',
-    type: 'Full-Time',
-    color: 'var(--cyber-cyan)',
-    icon: '💻',
-    description: 'Leading frontend development for enterprise-grade applications, building scalable and performant UI systems.',
-    achievements: [
-      'Architected dashboard UI consuming 15+ REST APIs with real-time data updates',
-      'Reduced bundle size by 40% through code splitting and lazy loading strategies',
-      'Built reusable component library adopted across 3 product teams',
-      'Implemented JWT-based auth with role-based access control system',
-      'Collaborated with backend team to design and optimize API contracts',
+    role: "B.Tech Student (Computer Science)",
+    company: "GLA University, Mathura",
+    period: "2022 – May 2026 (Expected)",
+    status: "SECTOR ONGOING",
+    color: "var(--cyber-yellow)",
+    desc: "Acquiring fundamental systems engineering blocks, data structures, and web technologies.",
+    logs: [
+      "Secured B.Tech CSE track with current cumulative CPI of 7.63",
+      "Completed core coursework: Data Structures, Algorithms, OS, Software Engineering",
+      "Built several full stack applications and AI utility scripts as self-directed coursework"
     ],
-    tech: ['React', 'TypeScript', 'REST APIs', 'JWT', 'Tailwind', 'Vite'],
+    tech: ["C/C++", "Python", "DSA", "Web Fundamentals", "SQL"]
   },
   {
-    role: 'Full Stack Web Dev Intern',
-    company: "Jovac's JVAC",
-    period: 'Jun 2024 – Jul 2024',
-    type: 'Internship',
-    color: 'var(--cyber-green)',
-    icon: '🚀',
-    description: 'Built full-stack web applications and participated in production code reviews and QA processes.',
-    achievements: [
-      'Developed 4+ web applications using JavaScript, HTML/CSS, and Node.js',
-      'Participated in code reviews and testing for quality assurance',
-      'Debugged and troubleshot production issues, reducing bug count by 30%',
-      'Collaborated with a team of 8 on responsive, dynamic web solutions',
+    role: "Operation In-Charge",
+    company: "Previous Organization (Operational Management)",
+    period: "2023 – 2024",
+    status: "SECTOR DE-COMMISSIONED",
+    color: "var(--cyber-orange)",
+    desc: "Managed daily workflows, operations checkpoints, and built custom scripts to automate report sheets.",
+    logs: [
+      "Led operations crew of 5, boosting general task execution speed by 25%",
+      "Wrote customized Python scripts to parse daily CSV sheets, eliminating manual inputs",
+      "Implemented a new digital tracking registry reducing reporting errors by 60%"
     ],
-    tech: ['JavaScript', 'Node.js', 'HTML/CSS', 'MongoDB', 'Express.js'],
+    tech: ["Python", "Excel Automation", "Operations Management", "Scripting"]
   },
   {
-    role: 'Operation In-Charge',
-    company: 'Previous Organization',
-    period: '2023 – 2024',
-    type: 'Part-Time',
-    color: 'var(--cyber-yellow)',
-    icon: '⚡',
-    description: 'Managed operations and implemented digital solutions to streamline workflows and improve efficiency.',
-    achievements: [
-      'Led a team of 5, improving operational efficiency by 25%',
-      'Automated manual reporting workflows using Python scripts',
-      'Implemented digital tracking system reducing errors by 60%',
-      'Trained new team members on technical tools and processes',
+    role: "Full Stack Web Dev Intern",
+    company: "Jovac's JVAC Technologies",
+    period: "Jun 2024 – Jul 2024",
+    status: "MISSION SUCCESSFUL",
+    color: "var(--cyber-green)",
+    desc: "Collaborated in client sprint cycles, built responsive web panels, and engaged in QA testing routines.",
+    logs: [
+      "Developed and optimized 4+ web interfaces using vanilla JS, HTML/CSS and Node.js",
+      "Reduced client-reported dashboard bugs by 30% during QA review loops",
+      "Collaborated in a development team of 8 to launch client responsive views"
     ],
-    tech: ['Python', 'Automation', 'Process Management', 'Reporting'],
+    tech: ["JavaScript", "Node.js", "Express.js", "MongoDB", "HTML/CSS"]
   },
   {
-    role: 'Independent AI Developer',
-    company: 'Freelance / Open Source',
-    period: '2024 – Present',
-    type: 'Freelance',
-    color: 'var(--cyber-pink)',
-    icon: '🤖',
-    description: 'Building AI-powered applications and automation systems independently, pushing the frontier of AI engineering.',
-    achievements: [
-      'Built CP-KYC — KYC automation platform with AI scraping agents',
-      'Developed PDF Chatbot using RAG architecture and vector embeddings',
-      'Created Resume Analyzer with OpenAI API and NLP pipelines',
-      'Contributed to open-source AI tooling and automation projects',
+    role: "Independent AI Developer",
+    company: "Freelance & Open Source AI",
+    period: "2024 – Present",
+    status: "MISSION ACTIVE",
+    color: "var(--cyber-pink)",
+    desc: "Developing and deploying AI orchestration agents, RAG engines, and compliance tools.",
+    logs: [
+      "Architected CP-KYC platform automating registry lookups via headless web scraping bots",
+      "Built RAG PDF Chatbot featuring FAISS vector memory chunks and context retrieval algorithms",
+      "Programmed ATS resume scanning scripts using OpenAI GPT completion models"
     ],
-    tech: ['Python', 'OpenAI', 'LangChain', 'FastAPI', 'PostgreSQL', 'RAG'],
+    tech: ["Python", "FastAPI", "OpenAI API", "LangChain", "Vector DBs", "RAG"]
   },
+  {
+    role: "Frontend Developer",
+    company: "Current Enterprise Role",
+    period: "2025 – Present",
+    status: "MISSION ACTIVE",
+    color: "var(--cyber-cyan)",
+    desc: "Leading frontend module development, optimizing assets, and implementing interactive client panels.",
+    logs: [
+      "Architected dashboard layout pulling data from 15+ REST endpoints with real-time updates",
+      "Decreased production bundle payloads by 40% through code splitting and router lazy loading",
+      "Built a reusable component directory adopted by 3 separate engineering crews",
+      "Implemented JWT authentication flows integrated with role-based dashboard filters"
+    ],
+    tech: ["React", "TypeScript", "Vite", "Tailwind", "REST APIs", "JWT"]
+  }
 ];
 
-const ExperienceCard: React.FC<{
-  exp: typeof EXPERIENCES[0]; index: number; isInView: boolean;
-}> = ({ exp, index, isInView }) => {
-  const isLeft = index % 2 === 0;
+const Experience: React.FC<ExperienceProps> = ({ selectedIndex, setSelectedIndex }) => {
+  const activeReport = EXPERIENCE_REPORTS[selectedIndex];
+
+  const handleStationWarp = (idx: number) => {
+    spaceAudio.playWarp();
+    setSelectedIndex(idx);
+  };
 
   return (
-    <div style={{
-      display: 'grid',
-      gridTemplateColumns: '1fr 60px 1fr',
-      gap: 0,
-      marginBottom: 0,
-      alignItems: 'start',
-    }} className="timeline-row">
-      {/* Left content */}
-      <motion.div
-        initial={{ opacity: 0, x: isLeft ? -50 : 0 }}
-        animate={isInView ? { opacity: 1, x: 0 } : {}}
-        transition={{ duration: 0.6, delay: index * 0.15 }}
-        style={{ padding: '0 32px 40px 0', ...(isLeft ? {} : { visibility: 'hidden' }) }}
+    <div
+      style={{
+        width: '100%',
+        height: '100%',
+        display: 'grid',
+        gridTemplateColumns: '1fr 2fr',
+        gap: 20,
+        padding: '24px',
+        overflow: 'hidden',
+      }}
+      className="flex flex-col lg:grid"
+    >
+      {/* Left panel: Stations navigation */}
+      <div
+        className="hud-panel p-4 overflow-y-auto flex flex-col gap-2 max-h-[35vh] lg:max-h-[82vh]"
+        style={{ border: '1px solid rgba(var(--cyber-cyan-rgb), 0.25)' }}
       >
-        {isLeft && <ExpCard exp={exp} />}
-      </motion.div>
+        <div className="font-mono text-[10px] tracking-wider text-slate-400 border-b border-slate-900 pb-2 mb-2 flex items-center gap-2">
+          <Terminal size={12} className="text-cyan-400" />
+          WARP_STATION_INDEX
+        </div>
 
-      {/* Timeline center */}
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <motion.div
-          initial={{ scale: 0, opacity: 0 }}
-          animate={isInView ? { scale: 1, opacity: 1 } : {}}
-          transition={{ delay: index * 0.15 + 0.2, type: 'spring' }}
-          style={{
-            width: 48, height: 48, borderRadius: '50%',
-            background: `${exp.color}20`,
-            border: `2px solid ${exp.color}`,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 20,
-            boxShadow: `0 0 20px ${exp.color}40`,
-            flexShrink: 0, zIndex: 2, position: 'relative',
-          }}
-        >
-          {exp.icon}
-        </motion.div>
-        <div style={{
-          flex: 1, width: 2, minHeight: 40,
-          background: `linear-gradient(to bottom, ${exp.color}60, transparent)`,
-        }} />
+        {TIMELINE_STATIONS.map((station, idx) => {
+          const isActive = idx === selectedIndex;
+          return (
+            <button
+              key={idx}
+              onClick={() => handleStationWarp(idx)}
+              onMouseEnter={() => spaceAudio.playHover()}
+              style={{
+                width: '100%',
+                padding: '12px 14px',
+                textAlign: 'left',
+                borderRadius: 6,
+                border: 'none',
+                background: isActive ? 'linear-gradient(135deg, rgba(var(--cyber-cyan-rgb), 0.15), rgba(var(--cyber-green-rgb), 0.05))' : 'rgba(255,255,255,0.02)',
+                color: isActive ? 'var(--cyber-cyan)' : 'var(--text-primary)',
+                borderLeft: isActive ? `3px solid ${station.color}` : '3px solid transparent',
+                cursor: 'none',
+                transition: 'all 0.2s',
+              }}
+              className="flex justify-between items-center group hover:bg-slate-900/60"
+            >
+              <div>
+                <div className="font-mono text-[11px] font-bold tracking-wider">{station.label.toUpperCase()}</div>
+                <div className="font-mono text-[8px] text-slate-500 mt-0.5 tracking-widest">YEAR: {station.year}</div>
+              </div>
+              <span style={{ color: station.color }} className="text-[9px] animate-pulse">●</span>
+            </button>
+          );
+        })}
       </div>
 
-      {/* Right content */}
-      <motion.div
-        initial={{ opacity: 0, x: !isLeft ? 50 : 0 }}
-        animate={isInView ? { opacity: 1, x: 0 } : {}}
-        transition={{ duration: 0.6, delay: index * 0.15 }}
-        style={{ padding: '0 0 40px 32px', ...(!isLeft ? {} : { visibility: 'hidden' }) }}
+      {/* Right panel: Active Station Mission Report */}
+      <div
+        className="hud-panel p-6 overflow-y-auto flex flex-col gap-4 max-h-[65vh] lg:max-h-[82vh]"
+        style={{ border: '1px solid rgba(var(--cyber-cyan-rgb), 0.25)' }}
       >
-        {!isLeft && <ExpCard exp={exp} />}
-      </motion.div>
-    </div>
-  );
-};
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={selectedIndex}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.3 }}
+            className="flex flex-col gap-4 font-mono text-[11px]"
+          >
+            {/* Header info */}
+            <div className="flex justify-between items-start border-b border-slate-900 pb-4">
+              <div>
+                <div className="flex items-center gap-2 mb-1.5">
+                  <span
+                    style={{
+                      backgroundColor: `${activeReport.color}15`,
+                      borderColor: `${activeReport.color}40`,
+                      color: activeReport.color,
+                    }}
+                    className="px-2.5 py-0.5 border text-[8px] tracking-widest rounded-sm font-bold"
+                  >
+                    {activeReport.status}
+                  </span>
+                  <span className="text-slate-500 text-[9px]">SECTOR_COORD: Z({TIMELINE_STATIONS[selectedIndex].z}ly)</span>
+                </div>
+                <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 900, color: 'var(--cyber-cyan)' }}>
+                  {activeReport.role}
+                </h2>
+                <div className="text-slate-400 font-bold text-[10px] uppercase tracking-wider mt-0.5">
+                  {activeReport.company}
+                </div>
+              </div>
 
-const ExpCard: React.FC<{ exp: typeof EXPERIENCES[0] }> = ({ exp }) => (
-  <motion.div
-    whileHover={{ y: -4, boxShadow: `0 16px 40px ${exp.color}20` }}
-    style={{
-      padding: '24px',
-      background: 'rgba(10,10,30,0.9)',
-      border: `1px solid ${exp.color}30`,
-      borderRadius: 12,
-      borderLeft: `3px solid ${exp.color}`,
-      transition: 'all 0.3s',
-      cursor: 'default',
-    }}
-  >
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10, flexWrap: 'wrap', marginBottom: 8 }}>
-      <div>
-        <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, color: exp.color, fontWeight: 700, marginBottom: 4 }}>
-          {exp.role}
-        </div>
-        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)' }}>
-          {exp.company}
-        </div>
+              <div style={{ color: activeReport.color }} className="flex items-center gap-1.5 text-[9px] font-bold">
+                <Calendar size={12} />
+                {activeReport.period}
+              </div>
+            </div>
+
+            {/* Description */}
+            <div className="bg-slate-950/60 border border-slate-900/60 p-3 rounded text-slate-400 italic">
+              {activeReport.desc}
+            </div>
+
+            {/* Log achievements */}
+            <div className="flex flex-col gap-2">
+              <span className="text-slate-500 font-bold tracking-wider uppercase border-b border-slate-900 pb-1 mb-1">
+                SYSTEM_LOG_ACHIEVEMENTS
+              </span>
+              <ul className="flex flex-col gap-3">
+                {activeReport.logs.map((log, idx) => (
+                  <li key={idx} className="flex items-start gap-2.5 text-slate-300 leading-relaxed">
+                    <ChevronRight size={13} style={{ color: activeReport.color }} className="mt-0.5 flex-shrink-0" />
+                    <span>{log}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Configured tech stack */}
+            <div className="border-t border-slate-900 pt-4 flex flex-wrap gap-2 items-center">
+              <Zap size={13} className="text-slate-500" />
+              <span className="text-slate-500 text-[9px] tracking-widest uppercase mr-2">EQUIPPED MODULES:</span>
+              {activeReport.tech.map((t) => (
+                <span
+                  key={t}
+                  style={{
+                    color: activeReport.color,
+                    borderColor: `${activeReport.color}30`,
+                    backgroundColor: `${activeReport.color}05`,
+                  }}
+                  className="px-2.5 py-1 border text-[9px] tracking-wider rounded-sm font-bold"
+                >
+                  {t}
+                </span>
+              ))}
+            </div>
+          </motion.div>
+        </AnimatePresence>
       </div>
-      <div style={{ textAlign: 'right', flexShrink: 0 }}>
-        <div style={{
-          display: 'inline-flex', alignItems: 'center', gap: 5,
-          padding: '3px 10px', borderRadius: 100,
-          background: `${exp.color}15`, border: `1px solid ${exp.color}30`,
-          fontFamily: 'var(--font-mono)', fontSize: 9, color: exp.color, letterSpacing: '1px',
-          marginBottom: 6,
-        }}>
-          <Calendar size={9} /> {exp.period}
-        </div>
-        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-muted)', textAlign: 'right' }}>
-          {exp.type}
-        </div>
-      </div>
     </div>
-
-    <p style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'var(--text-muted)', marginBottom: 14, lineHeight: 1.7 }}>
-      {exp.description}
-    </p>
-
-    <ul style={{ listStyle: 'none', padding: 0, marginBottom: 16 }}>
-      {exp.achievements.slice(0, 3).map((ach, i) => (
-        <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 6, fontFamily: 'var(--font-body)', fontSize: 11, color: '#a0b4c8', lineHeight: 1.5 }}>
-          <ChevronRight size={12} color={exp.color} style={{ flexShrink: 0, marginTop: 2 }} />
-          {ach}
-        </li>
-      ))}
-    </ul>
-
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-      {exp.tech.map(t => (
-        <span key={t} style={{
-          padding: '3px 9px',
-          fontFamily: 'var(--font-mono)', fontSize: 9,
-          color: exp.color,
-          border: `1px solid ${exp.color}30`,
-          borderRadius: 4, letterSpacing: '1px',
-          background: `${exp.color}08`,
-        }}>
-          {t}
-        </span>
-      ))}
-    </div>
-  </motion.div>
-);
-
-const Experience: React.FC = () => {
-  const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, margin: '-100px' });
-
-  return (
-    <section id="experience" ref={ref} style={{ padding: '100px 24px', background: 'var(--bg-secondary)', position: 'relative', overflow: 'hidden' }}>
-      <div style={{ position: 'absolute', top: '30%', left: '50%', transform: 'translateX(-50%)', width: 600, height: 400, background: 'radial-gradient(ellipse, rgba(0,212,255,0.03) 0%, transparent 70%)', pointerEvents: 'none' }} />
-
-      <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-        <SectionHeader
-          tag="03"
-          label="EXPERIENCE"
-          title="Career Timeline"
-          subtitle="Loading work history... 4 entries found."
-          isInView={isInView}
-        />
-
-        <div style={{ marginTop: 72, position: 'relative' }}>
-          {EXPERIENCES.map((exp, i) => (
-            <ExperienceCard key={exp.role} exp={exp} index={i} isInView={isInView} />
-          ))}
-        </div>
-      </div>
-
-      <style>{`
-        @media (max-width: 768px) {
-          .timeline-row {
-            grid-template-columns: 40px 1fr !important;
-            gap: 0 !important;
-          }
-        }
-      `}</style>
-    </section>
   );
 };
 

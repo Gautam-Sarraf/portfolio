@@ -52,7 +52,7 @@ const CursorTrail: React.FC = () => {
               width: size,
               height: size,
               borderRadius: '50%',
-              background: i % 3 === 0 ? `rgba(0, 212, 255, ${alpha})` : i % 3 === 1 ? `rgba(0, 255, 136, ${alpha})` : `rgba(255, 0, 128, ${alpha * 0.5})`,
+              background: i % 3 === 0 ? `rgba(0, 253, 216, ${alpha})` : i % 3 === 1 ? `rgba(168, 85, 247, ${alpha})` : `rgba(255, 46, 147, ${alpha * 0.5})`,
               boxShadow: `0 0 ${size * 2}px currentColor`,
               transition: 'none',
               pointerEvents: 'none',

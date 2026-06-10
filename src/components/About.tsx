@@ -102,7 +102,7 @@ const About: React.FC = () => {
       {/* Background glow */}
       <div style={{
         position: 'absolute', top: '50%', left: '10%', width: 400, height: 400,
-        background: 'radial-gradient(circle, rgba(0,212,255,0.04) 0%, transparent 70%)',
+        background: 'radial-gradient(circle, rgba(var(--cyber-cyan-rgb),0.04) 0%, transparent 70%)',
         transform: 'translateY(-50%)', pointerEvents: 'none',
       }} />
 
@@ -130,10 +130,10 @@ const About: React.FC = () => {
             transition={{ duration: 0.7, delay: 0.2 }}
             style={{
               background: 'rgba(5, 5, 16, 0.95)',
-              border: '1px solid rgba(0, 212, 255, 0.2)',
+              border: '1px solid rgba(var(--cyber-cyan-rgb), 0.2)',
               borderRadius: 12,
               overflow: 'hidden',
-              boxShadow: '0 0 40px rgba(0, 212, 255, 0.05), 0 20px 60px rgba(0,0,0,0.5)',
+              boxShadow: '0 0 40px rgba(var(--cyber-cyan-rgb), 0.05), 0 20px 60px rgba(0,0,0,0.5)',
               fontFamily: 'var(--font-mono)',
               fontSize: 13,
             }}
@@ -143,7 +143,7 @@ const About: React.FC = () => {
               display: 'flex', alignItems: 'center', gap: 8,
               padding: '12px 16px',
               background: 'rgba(255,255,255,0.03)',
-              borderBottom: '1px solid rgba(0,212,255,0.1)',
+              borderBottom: '1px solid rgba(var(--cyber-cyan-rgb),0.1)',
             }}>
               <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#ff5f57' }} />
               <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#febc2e' }} />
@@ -242,7 +242,7 @@ const About: React.FC = () => {
               style={{
                 padding: '20px 24px',
                 background: 'rgba(10, 10, 30, 0.8)',
-                border: '1px solid rgba(0,212,255,0.15)',
+                border: '1px solid rgba(var(--cyber-cyan-rgb),0.15)',
                 borderRadius: 10,
               }}
             >
@@ -256,10 +256,10 @@ const About: React.FC = () => {
                     fontFamily: 'var(--font-mono)',
                     fontSize: 10,
                     color: 'var(--cyber-cyan)',
-                    border: '1px solid rgba(0,212,255,0.25)',
+                    border: '1px solid rgba(var(--cyber-cyan-rgb),0.25)',
                     borderRadius: 100,
                     letterSpacing: '1px',
-                    background: 'rgba(0,212,255,0.05)',
+                    background: 'rgba(var(--cyber-cyan-rgb),0.05)',
                   }}>
                     {trait}
                   </span>
@@ -292,7 +292,7 @@ export const SectionHeader: React.FC<{
     }}>
       <span style={{ color: 'var(--cyber-cyan)' }}>{tag}.</span>
       {label}
-      <span style={{ height: 1, width: 40, background: 'rgba(0,212,255,0.3)', display: 'inline-block' }} />
+      <span style={{ height: 1, width: 40, background: 'rgba(var(--cyber-cyan-rgb),0.3)', display: 'inline-block' }} />
     </div>
     <h2 style={{
       fontFamily: 'var(--font-display)',

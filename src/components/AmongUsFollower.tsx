@@ -55,7 +55,7 @@ const AmongUsFollower: React.FC = () => {
         pointerEvents: 'none',
         transform: `scaleX(${flipped ? -1 : 1})`,
         transition: 'transform 0.15s ease',
-        filter: 'drop-shadow(0 0 6px rgba(0, 212, 255, 0.5))',
+        filter: 'drop-shadow(0 0 6px rgba(var(--cyber-cyan-rgb), 0.5))',
         userSelect: 'none',
       }}
     >

@@ -1,250 +1,273 @@
-import React, { useRef, useState } from 'react';
-import { motion, useInView } from 'framer-motion';
-import { SectionHeader } from './About';
+import React from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Award, RefreshCw, Layers } from 'lucide-react';
+import { spaceAudio } from '../utils/audio';
+import { SKILL_PLANETS } from './SpaceCanvas';
 
-const SKILL_CATEGORIES = [
-  {
-    label: 'Frontend',
-    color: 'var(--cyber-cyan)',
-    icon: '⚛️',
-    skills: [
-      { name: 'React', level: 88 },
-      { name: 'TypeScript', level: 80 },
-      { name: 'JavaScript', level: 90 },
-      { name: 'HTML/CSS', level: 92 },
-      { name: 'Tailwind', level: 85 },
-      { name: 'Next.js', level: 70 },
-    ],
+interface SkillsProps {
+  selectedSkill: string | null;
+  setSelectedSkill: (skill: string | null) => void;
+}
+
+const SKILL_DETAILS: Record<string, {
+  level: number;
+  role: string;
+  useCase: string;
+  projects: string[];
+  desc: string;
+}> = {
+  React: {
+    level: 88,
+    role: "Core Web Client",
+    useCase: "Building highly responsive dashboard UIs, state synchronization with Websockets, and custom reusable canvas interfaces.",
+    projects: ["Resume Analyzer AI", "PDF Chatbot", "OT Scheduler", "TeamSphere"],
+    desc: "Primary clientside engine. Specialize in custom hooks, context state management, and Framer Motion animation layouts.",
   },
-  {
-    label: 'Backend',
-    color: 'var(--cyber-green)',
-    icon: '⚙️',
-    skills: [
-      { name: 'Node.js', level: 85 },
-      { name: 'Express.js', level: 83 },
-      { name: 'REST APIs', level: 88 },
-      { name: 'PostgreSQL', level: 78 },
-      { name: 'MongoDB', level: 80 },
-      { name: 'JWT/Auth', level: 82 },
-    ],
+  TypeScript: {
+    level: 80,
+    role: "Type Safety & Security",
+    useCase: "Strict interface mapping, API payload formatting, and state type checking across frontend microservices.",
+    projects: ["OT Scheduler", "TeamSphere", "PMCH Platform"],
+    desc: "Ensuring compiler safety and structure across scaled developer modules.",
   },
-  {
-    label: 'AI / ML',
-    color: 'var(--cyber-pink)',
-    icon: '🤖',
-    skills: [
-      { name: 'OpenAI API', level: 85 },
-      { name: 'LangChain', level: 78 },
-      { name: 'RAG', level: 76 },
-      { name: 'AI Agents', level: 74 },
-      { name: 'Prompt Eng.', level: 88 },
-      { name: 'Vector DBs', level: 72 },
-    ],
+  Python: {
+    level: 84,
+    role: "AI Inference & Script Automation",
+    useCase: "Developing NLP parsing scripts, web scraping pipelines, and backends utilizing LangChain nodes.",
+    projects: ["Resume Analyzer AI", "PDF Chatbot", "CP-KYC Automation"],
+    desc: "Core backend language for data manipulation, mathematical engines, and artificial intelligence wrappers.",
   },
-  {
-    label: 'Tools & Infra',
-    color: 'var(--cyber-yellow)',
-    icon: '🛠️',
-    skills: [
-      { name: 'Python', level: 84 },
-      { name: 'Git/GitHub', level: 90 },
-      { name: 'Docker', level: 68 },
-      { name: 'Linux', level: 75 },
-      { name: 'Postman', level: 85 },
-      { name: 'FastAPI', level: 78 },
-    ],
+  FastAPI: {
+    level: 78,
+    role: "High-Performance REST APIs",
+    useCase: "Creating light, async API endpoints to serve ML predictions and coordinate vector lookups.",
+    projects: ["Resume Analyzer AI", "PDF Chatbot", "CP-KYC Automation"],
+    desc: "Ultra-fast ASGI framework. Leverage its native async routines and automatic OpenAPI schema compilers.",
   },
-];
+  OpenAI: {
+    level: 85,
+    role: "LLM Orchestration & Embeddings",
+    useCase: "Translating raw documents to embeddings, context search responses, and ATS evaluation pipelines.",
+    projects: ["Resume Analyzer AI", "PDF Chatbot", "AI Chat Application"],
+    desc: "Integrating advanced models (GPT-4, Ada) into production pipelines for human-like reasoning tasks.",
+  },
+  LangChain: {
+    level: 78,
+    role: "AI Agent & Chain Builder",
+    useCase: "Chaining prompts, structuring agent action-cycles, and setting up document split/load vectors.",
+    projects: ["PDF Chatbot", "Resume Analyzer AI"],
+    desc: "Orchestrating agent workflows and conversational history loops over vector memories.",
+  },
+  MongoDB: {
+    level: 80,
+    role: "NoSQL Database Logs",
+    useCase: "Handling real-time chat histories, user account metrics, and flexible metadata documents.",
+    projects: ["TeamSphere", "Marketplace Platform", "PMCH Platform"],
+    desc: "Storing horizontal, high-scale application state documents.",
+  },
+  Docker: {
+    level: 68,
+    role: "Containerized Deployments",
+    useCase: "Bundling microservices, scrapers, and database engines into identical runtime environments.",
+    projects: ["CP-KYC Automation"],
+    desc: "Configuring multi-stage Dockerfiles and compose setups for modular system orchestration.",
+  },
+  AWS: {
+    level: 70,
+    role: "Cloud Compute & S3 Buckets",
+    useCase: "Uploading PDF logs, hosting server nodes, and managing CDN endpoints.",
+    projects: ["Marketplace Platform"],
+    desc: "Deploying microservices infrastructure and server storage.",
+  },
+};
 
 const CERTIFICATIONS = [
-  { title: 'Back End Development & APIs', issuer: 'freeCodeCamp', icon: '🏆', color: 'var(--cyber-green)' },
-  { title: 'Full Stack Web Development', issuer: 'Coding Blocks', icon: '⭐', color: 'var(--cyber-cyan)' },
-  { title: 'Quality Assurance', issuer: 'freeCodeCamp', icon: '🎯', color: 'var(--cyber-yellow)' },
+  { title: "Back End Development & APIs", issuer: "freeCodeCamp", color: "#00ff88" },
+  { title: "Full Stack Web Development", issuer: "Coding Blocks", color: "#00f0ff" },
+  { title: "Quality Assurance", issuer: "freeCodeCamp", color: "#ffcc00" },
 ];
 
-const SkillBar: React.FC<{ name: string; level: number; color: string; delay: number; isInView: boolean }> = ({
-  name, level, color, delay, isInView,
-}) => (
-  <motion.div
-    initial={{ opacity: 0, x: -20 }}
-    animate={isInView ? { opacity: 1, x: 0 } : {}}
-    transition={{ duration: 0.5, delay }}
-    style={{ marginBottom: 14 }}
-  >
-    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-primary)', letterSpacing: '1px' }}>{name}</span>
-      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color }}>{level}%</span>
-    </div>
-    <div style={{ height: 4, background: 'rgba(255,255,255,0.06)', borderRadius: 2, overflow: 'hidden' }}>
-      <motion.div
-        initial={{ width: 0 }}
-        animate={isInView ? { width: `${level}%` } : {}}
-        transition={{ duration: 1, delay: delay + 0.2, ease: 'easeOut' }}
-        style={{
-          height: '100%',
-          background: `linear-gradient(90deg, ${color}, ${color}80)`,
-          borderRadius: 2,
-          boxShadow: `0 0 8px ${color}60`,
-          position: 'relative',
-        }}
-      />
-    </div>
-  </motion.div>
-);
+const Skills: React.FC<SkillsProps> = ({ selectedSkill, setSelectedSkill }) => {
+  const handleSkillSelect = (name: string) => {
+    spaceAudio.playWarp();
+    setSelectedSkill(name);
+  };
 
-const Skills: React.FC = () => {
-  const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, margin: '-100px' });
-  const [activeCategory, setActiveCategory] = useState(0);
+  const handleReset = () => {
+    spaceAudio.playClick();
+    setSelectedSkill(null);
+  };
 
   return (
-    <section id="skills" ref={ref} style={{ padding: '100px 24px', background: 'var(--bg-primary)', position: 'relative', overflow: 'hidden' }}>
-      {/* BG accents */}
-      <div style={{ position: 'absolute', top: '20%', right: '-5%', width: 300, height: 300, background: 'radial-gradient(circle, rgba(0,255,136,0.04) 0%, transparent 70%)', pointerEvents: 'none' }} />
-      <div style={{ position: 'absolute', bottom: '20%', left: '-5%', width: 250, height: 250, background: 'radial-gradient(circle, rgba(255,0,128,0.04) 0%, transparent 70%)', pointerEvents: 'none' }} />
-
-      <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-        <SectionHeader
-          tag="02"
-          label="SKILLS"
-          title="Tech Arsenal"
-          subtitle="Systems initialized. All modules online."
-          isInView={isInView}
-        />
-
-        {/* Category tabs */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 0.3 }}
-          style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap', marginTop: 48, marginBottom: 48 }}
-        >
-          {SKILL_CATEGORIES.map((cat, i) => (
-            <button
-              key={cat.label}
-              onClick={() => setActiveCategory(i)}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 8,
-                padding: '10px 20px',
-                fontFamily: 'var(--font-mono)',
-                fontSize: 11,
-                letterSpacing: '2px',
-                cursor: 'none',
-                border: 'none',
-                borderRadius: 6,
-                background: activeCategory === i ? cat.color : 'rgba(255,255,255,0.04)',
-                color: activeCategory === i ? '#000' : cat.color,
-                boxShadow: activeCategory === i ? `0 0 20px ${cat.color}40` : 'none',
-                transition: 'all 0.2s',
-              }}
-            >
-              <span>{cat.icon}</span>
-              {cat.label}
-            </button>
-          ))}
-        </motion.div>
-
-        {/* Skills grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24, marginBottom: 48 }}>
-          {SKILL_CATEGORIES.map((cat, catIdx) => (
+    <div
+      style={{
+        width: '100%',
+        height: '100%',
+        display: 'grid',
+        gridTemplateColumns: '1.5fr 1fr',
+        gap: 20,
+        padding: '24px',
+        overflow: 'hidden',
+      }}
+      className="flex flex-col lg:grid"
+    >
+      {/* Left Column: Skill Planet diagnostics OR Galaxy lists */}
+      <div
+        className="hud-panel p-5 overflow-y-auto max-h-[50vh] lg:max-h-[82vh]"
+        style={{ border: '1px solid rgba(var(--cyber-cyan-rgb), 0.25)' }}
+      >
+        <AnimatePresence mode="wait">
+          {selectedSkill && SKILL_DETAILS[selectedSkill] ? (
             <motion.div
-              key={cat.label}
-              initial={{ opacity: 0, y: 30 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 0.2 + catIdx * 0.1 }}
-              style={{
-                padding: '28px 28px',
-                background: `linear-gradient(135deg, rgba(10,10,30,0.95) 0%, rgba(10,10,30,0.7) 100%)`,
-                border: `1px solid ${activeCategory === catIdx ? cat.color + '60' : 'rgba(255,255,255,0.06)'}`,
-                borderRadius: 14,
-                backdropFilter: 'blur(12px)',
-                transition: 'border-color 0.3s',
-                boxShadow: activeCategory === catIdx ? `0 0 30px ${cat.color}15` : 'none',
-              }}
+              key="selected"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              className="flex flex-col gap-4 font-mono text-[11px]"
             >
-              {/* Category header */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 24 }}>
-                <div style={{
-                  width: 36, height: 36, borderRadius: 8,
-                  background: `${cat.color}15`,
-                  border: `1px solid ${cat.color}40`,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 18,
-                }}>
-                  {cat.icon}
-                </div>
+              {/* Header */}
+              <div className="flex justify-between items-center border-b border-slate-900 pb-3">
                 <div>
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 13, color: cat.color, fontWeight: 700, letterSpacing: '1px' }}>
-                    {cat.label}
-                  </div>
-                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-muted)' }}>
-                    {cat.skills.length} modules loaded
-                  </div>
+                  <span className="font-bold text-[8px] bg-cyan-900/50 border border-cyan-500/40 text-cyan-400 px-2 py-0.5 rounded-sm tracking-wider mr-2 uppercase">
+                    SECTOR SELECTED
+                  </span>
+                  <h2 className="text-xl font-bold text-cyan-400 font-display mt-1 tracking-wider uppercase">
+                    {selectedSkill}
+                  </h2>
+                </div>
+                <button
+                  onClick={handleReset}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 border border-slate-800 text-slate-400 hover:text-cyan-400 rounded transition-colors text-[9px] cursor-none"
+                >
+                  <RefreshCw size={11} className="animate-spin" style={{ animationDuration: '4s' }} />
+                  RESET SYSTEM
+                </button>
+              </div>
+
+              {/* Stats gauge */}
+              <div className="flex flex-col gap-2 p-3 bg-slate-950/60 border border-slate-900/60 rounded">
+                <div className="flex justify-between">
+                  <span className="text-slate-500">INTELLIGENCE GAIN:</span>
+                  <span className="text-cyan-400 font-bold">{SKILL_DETAILS[selectedSkill].level}% COMPATIBLE</span>
+                </div>
+                <div className="h-2 bg-slate-900 rounded overflow-hidden">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${SKILL_DETAILS[selectedSkill].level}%` }}
+                    className="h-full bg-cyan-400 shadow-[0_0_8px_var(--cyber-cyan)]"
+                  />
                 </div>
               </div>
 
-              {/* Skill bars */}
-              {cat.skills.map((skill, si) => (
-                <SkillBar
-                  key={skill.name}
-                  name={skill.name}
-                  level={skill.level}
-                  color={cat.color}
-                  delay={0.3 + catIdx * 0.1 + si * 0.05}
-                  isInView={isInView}
-                />
-              ))}
+              {/* Data fields */}
+              <div className="flex flex-col gap-3 leading-relaxed">
+                <div>
+                  <span className="text-slate-500 block mb-1">SYSTEM ROLE:</span>
+                  <span className="text-slate-200">{SKILL_DETAILS[selectedSkill].role.toUpperCase()}</span>
+                </div>
+
+                <div>
+                  <span className="text-slate-500 block mb-1">MODULE OVERVIEW:</span>
+                  <span className="text-slate-300">{SKILL_DETAILS[selectedSkill].desc}</span>
+                </div>
+
+                <div>
+                  <span className="text-slate-500 block mb-1">TACTICAL USE CASES:</span>
+                  <span className="text-slate-300">{SKILL_DETAILS[selectedSkill].useCase}</span>
+                </div>
+
+                <div>
+                  <span className="text-slate-500 block mb-1">INTEGRATED CODES:</span>
+                  <div className="flex flex-wrap gap-1.5 mt-1">
+                    {SKILL_DETAILS[selectedSkill].projects.map(proj => (
+                      <span key={proj} className="px-2 py-0.5 bg-slate-900 border border-slate-800 text-cyan-300 text-[9px] rounded-sm">
+                        {proj}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="list"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex flex-col gap-4 font-mono text-[11px]"
+            >
+              <div className="border-b border-slate-900 pb-2 flex items-center gap-2">
+                <Layers size={13} className="text-cyan-400" />
+                <span className="tracking-wider text-slate-400 uppercase">SYSTEM_PLANETS_DIAGNOSTICS</span>
+              </div>
+              <p className="text-[10px] text-slate-500 leading-relaxed">
+                The star chart maps Gautam's technical planetary clusters. Click any planet in the space sector or click buttons below to inspect system statistics.
+              </p>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-2">
+                {SKILL_PLANETS.map((planet) => (
+                  <button
+                    key={planet.name}
+                    onClick={() => handleSkillSelect(planet.name)}
+                    onMouseEnter={() => spaceAudio.playHover()}
+                    className="flex flex-col gap-2 p-3 bg-slate-950/40 border border-slate-900 hover:border-cyan-500/30 rounded text-left transition-colors cursor-none group"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-slate-200 group-hover:text-cyan-400 transition-colors uppercase">
+                        {planet.name}
+                      </span>
+                      <span style={{ color: planet.color }} className="text-[8px] animate-pulse">●</span>
+                    </div>
+                    {SKILL_DETAILS[planet.name] && (
+                      <div className="w-full h-1 bg-slate-900 rounded overflow-hidden">
+                        <div
+                          style={{ width: `${SKILL_DETAILS[planet.name].level}%`, backgroundColor: planet.color }}
+                          className="h-full"
+                        />
+                      </div>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* Right Column: Holographic Certificate Artifacts */}
+      <div
+        className="hud-panel p-5 overflow-y-auto flex flex-col gap-4 max-h-[30vh] lg:max-h-[82vh]"
+        style={{ border: '1px solid rgba(var(--cyber-cyan-rgb), 0.25)' }}
+      >
+        <div className="font-mono text-[10px] tracking-wider text-slate-400 border-b border-slate-900 pb-2 flex items-center gap-2">
+          <Award size={13} className="text-cyan-400" />
+          SYSTEM_CREDENTIALS
+        </div>
+
+        <div className="flex flex-col gap-3 font-mono text-[10px]">
+          {CERTIFICATIONS.map((c, idx) => (
+            <motion.div
+              key={idx}
+              whileHover={{ y: -3, scale: 1.01 }}
+              onMouseEnter={() => spaceAudio.playHover()}
+              style={{
+                borderLeft: `3px solid ${c.color}`,
+                border: '1px solid rgba(255,255,255,0.03)',
+                background: 'rgba(3,4,15,0.4)',
+              }}
+              className="p-3 rounded flex gap-3 items-center group cursor-none hover:bg-slate-950/80 transition-colors"
+            >
+              <div className="w-8 h-8 rounded-full border border-slate-800 flex items-center justify-center text-xs bg-slate-950/80 group-hover:border-cyan-500/40 transition-colors">
+                🏆
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="font-bold text-slate-200 truncate uppercase tracking-wider">{c.title}</div>
+                <div className="text-slate-500 text-[8px] mt-0.5 uppercase tracking-widest">{c.issuer}</div>
+              </div>
             </motion.div>
           ))}
         </div>
-
-        {/* Certifications */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 0.8 }}
-        >
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 12,
-            fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '4px',
-            color: 'var(--text-muted)', marginBottom: 20, justifyContent: 'center',
-          }}>
-            CERTIFICATIONS & ACHIEVEMENTS
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 16 }}>
-            {CERTIFICATIONS.map((cert, i) => (
-              <motion.div
-                key={cert.title}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={isInView ? { opacity: 1, scale: 1 } : {}}
-                transition={{ delay: 0.9 + i * 0.1 }}
-                whileHover={{ scale: 1.03, y: -4 }}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 14,
-                  padding: '18px 20px',
-                  background: 'rgba(10, 10, 30, 0.8)',
-                  border: `1px solid ${cert.color}30`,
-                  borderRadius: 10,
-                  borderLeft: `3px solid ${cert.color}`,
-                  cursor: 'none',
-                }}
-              >
-                <span style={{ fontSize: 22, flexShrink: 0 }}>{cert.icon}</span>
-                <div>
-                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-primary)', marginBottom: 4, lineHeight: 1.4 }}>
-                    {cert.title}
-                  </div>
-                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: cert.color }}>
-                    {cert.issuer}
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
       </div>
-    </section>
+    </div>
   );
 };
 

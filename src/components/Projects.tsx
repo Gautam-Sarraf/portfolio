@@ -1,405 +1,408 @@
-import React, { useRef, useState } from 'react';
-import { motion, useInView, AnimatePresence } from 'framer-motion';
-import { SectionHeader } from './About';
-import { Github, ExternalLink, ChevronRight } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Shield, GitPullRequest, ExternalLink, Network, FileCode, CheckCircle } from 'lucide-react';
+import { spaceAudio } from '../utils/audio';
 
-const PROJECTS = [
+interface Project {
+  id: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  problem: string;
+  architecture: string;
+  tech: string[];
+  challenges: string;
+  impact: string;
+  github: string;
+  demo?: string | null;
+  nodes: string[]; // for blueprint visualization
+}
+
+const MISSIONS: Project[] = [
   {
-    id: 1,
-    title: 'CP-KYC',
-    subtitle: 'AI KYC Automation Platform',
-    category: ['AI', 'Backend', 'Automation'],
-    categoryDisplay: 'AI + Backend + Automation',
-    color: 'var(--cyber-cyan)',
-    icon: '🤖',
-    featured: true,
-    description: 'Enterprise-grade KYC automation platform leveraging AI agents, web scraping, and microservices architecture. Processes thousands of verification requests with intelligent extraction and multi-stage approval workflows.',
-    features: [
-      'AI-driven document extraction & validation',
-      'Intelligent web scraping agents',
-      'Multi-stage approval workflow engine',
-      'Admin dashboard with real-time analytics',
-      'Microservices backend architecture',
-      'Automated risk scoring system',
-    ],
-    tech: ['Python', 'FastAPI', 'PostgreSQL', 'AI Agents', 'Docker', 'REST API'],
-    github: 'https://github.com/gautam-sarraf',
-    demo: null,
-    metrics: ['10x faster verification', '99.2% accuracy', 'Automated workflow'],
+    id: "resume-analyzer",
+    title: "Resume Analyzer AI",
+    subtitle: "ATS Optimization Pipeline",
+    description: "AI engine that parses resumes, analyzes skill alignment against job specs, and provides ATS improvement recommendations.",
+    problem: "Manual screening of hundreds of resumes results in massive recruiter overhead and high candidate false-negatives due to keyword filters.",
+    architecture: "PDF Extractor -> FastAPI Node -> OpenAI Embeddings -> Vector Similarity Score -> ATS Report Generator.",
+    tech: ["Python", "FastAPI", "OpenAI API", "FAISS", "NLP", "React"],
+    challenges: "Handling nested multi-column PDF layouts and extracting structured sections accurately without losing layout context.",
+    impact: "Boosted candidate selection matching accuracy by 44% and reduced ATS drop-offs.",
+    github: "https://github.com/gautam-sarraf",
+    nodes: ["User Upload", "FastAPI Parser", "OpenAI NLP", "ATS Scorer", "Report UI"],
   },
   {
-    id: 2,
-    title: 'PDF Chatbot',
-    subtitle: 'AI Document Q&A System',
-    category: ['AI'],
-    categoryDisplay: 'AI Application',
-    color: 'var(--cyber-pink)',
-    icon: '📄',
-    featured: true,
-    description: 'Intelligent PDF document assistant powered by RAG architecture. Upload any PDF and ask questions in natural language — the system retrieves relevant context using vector embeddings for accurate, context-aware answers.',
-    features: [
-      'PDF upload and processing pipeline',
-      'Semantic search with vector embeddings',
-      'RAG-based context-aware Q&A',
-      'Conversation memory and history',
-      'Multiple document support',
-    ],
-    tech: ['Python', 'OpenAI', 'LangChain', 'FAISS', 'FastAPI', 'React'],
-    github: 'https://github.com/gautam-sarraf',
-    demo: null,
-    metrics: ['RAG Architecture', 'Vector Search', 'Context-aware AI'],
+    id: "pdf-chatbot",
+    title: "PDF Chatbot RAG",
+    subtitle: "Semantic Doc Q&A System",
+    description: "RAG chatbot allowing users to upload large PDF books and query them using natural language with source attribution.",
+    problem: "Static document search fails to resolve semantic queries, forcing users to manually read long manuals to answer simple questions.",
+    architecture: "PDF Chunking -> OpenAI Ada -> Pinecone/ChromaDB -> RAG Context Fetcher -> GPT-4 Response Stream.",
+    tech: ["Python", "OpenAI", "LangChain", "ChromaDB", "FastAPI", "React"],
+    challenges: "Preventing model hallucination on domain-specific manuals and optimizing semantic chunk-overlap search parameters.",
+    impact: "Instant context-aware document queries with 99.1% factual retrieval accuracy.",
+    github: "https://github.com/gautam-sarraf",
+    nodes: ["PDF Book", "LangChain Chunk", "Vector DB", "Context RAG", "GPT-4 Stream"],
   },
   {
-    id: 3,
-    title: 'Resume Analyzer',
-    subtitle: 'AI-Powered ATS Scoring Tool',
-    category: ['AI'],
-    categoryDisplay: 'AI Tool',
-    color: 'var(--cyber-yellow)',
-    icon: '📊',
-    featured: false,
-    description: 'Intelligent resume analysis tool that parses, scores, and provides actionable improvement suggestions to beat ATS systems and land more interviews.',
-    features: [
-      'Automated resume parsing',
-      'ATS compatibility scoring',
-      'Skill gap analysis',
-      'Keyword optimization suggestions',
-      'Improvement recommendations',
-    ],
-    tech: ['Python', 'OpenAI', 'NLP', 'FastAPI', 'React'],
-    github: 'https://github.com/gautam-sarraf',
-    demo: null,
-    metrics: ['NLP parsing', 'ATS scoring', 'AI suggestions'],
+    id: "cp-kyc",
+    title: "CP-KYC Automation",
+    subtitle: "AI Agent Verification",
+    description: "Enterprise compliance agent scraping public database registries to verify company corporate registrations automatically.",
+    problem: "KYC verification takes days of manual search across scattered international databases, leading to client onboarding delays.",
+    architecture: "Web Agent -> Puppeteer Node -> OCR Parser -> Risk Analysis Agent -> Approval Dashboard.",
+    tech: ["Python", "FastAPI", "Puppeteer", "PostgreSQL", "Docker", "REST API"],
+    challenges: "Overcoming strict scraping blocks (Cloudflare, Captchas) on government registry databases and structuring raw data.",
+    impact: "Decreased corporate KYC validation timeline from 48 hours to under 3 minutes.",
+    github: "https://github.com/gautam-sarraf",
+    nodes: ["Corporate Request", "Scraper Node", "OCR Validation", "Risk Core", "SQL DB"],
   },
   {
-    id: 4,
-    title: 'OT Scheduler',
-    subtitle: 'Employee Shift Management Platform',
-    category: ['Automation', 'Full Stack'],
-    categoryDisplay: 'Automation Platform',
-    color: 'var(--cyber-green)',
-    icon: '📅',
-    featured: false,
-    description: 'Comprehensive overtime scheduling and shift management system for organizations. Automates complex shift allocation with constraint-based scheduling and real-time reporting.',
-    features: [
-      'Intelligent shift allocation engine',
-      'Employee availability tracking',
-      'Real-time scheduling dashboard',
-      'Automated report generation',
-      'Conflict detection & resolution',
-    ],
-    tech: ['React', 'Node.js', 'PostgreSQL', 'Express.js', 'Chart.js'],
-    github: 'https://github.com/gautam-sarraf',
-    demo: null,
-    metrics: ['Auto-scheduling', 'Live dashboard', 'Smart reports'],
+    id: "ot-scheduler",
+    title: "OT Scheduler Platform",
+    subtitle: "Shift Allocation Engine",
+    description: "Overtime allocation system matching shift schedules with staff requirements, constraints, and historical records.",
+    problem: "Manual shift allocation creates roster conflicts, labor compliance violations, and uneven overtime distribution.",
+    architecture: "Constraint Solver Node -> Express JS -> PostgreSQL -> Roster Grid UI.",
+    tech: ["React", "TypeScript", "Node.js", "Express", "PostgreSQL", "Tailwind"],
+    challenges: "Designing an algorithm that satisfies 15+ shift constraints simultaneously while distributing hours fairly.",
+    impact: "Zero roster scheduling conflicts across 3 active corporate divisions.",
+    github: "https://github.com/gautam-sarraf",
+    nodes: ["Roster Requests", "Constraint Solver", "Postgres Write", "Live Dashboard"],
   },
   {
-    id: 5,
-    title: 'TeamSphere',
-    subtitle: 'Real-Time Collaboration Hub',
-    category: ['Full Stack'],
-    categoryDisplay: 'Real-Time Collaboration',
-    color: 'var(--cyber-purple)',
-    icon: '👥',
-    featured: true,
-    description: 'Full-featured internal communication and collaboration platform with real-time messaging, video calls, file sharing, and role-based access control for enterprise teams.',
-    features: [
-      'Real-time WebSocket messaging',
-      'Video conferencing with WebRTC',
-      'File sharing and management',
-      'Role-based access control',
-      'Team channels and direct messaging',
-    ],
-    tech: ['MERN', 'WebSocket', 'WebRTC', 'Socket.io', 'JWT', 'MongoDB'],
-    github: 'https://github.com/Gautam-Sarraf/TeamSphere',
-    demo: null,
-    metrics: ['Real-time comms', 'WebRTC video', 'RBAC system'],
+    id: "ai-chat-app",
+    title: "AI Chat Application",
+    subtitle: "Real-time AI Assistant",
+    description: "Websocket-enabled client dashboard connecting users directly to customized LLM agent channels with memory logs.",
+    problem: "Traditional chatbot wrappers lack state persistence, conversation branches, and smooth multi-user chat distribution.",
+    architecture: "React Client -> WS Gateway -> Redis PubSub -> OpenAI Agent -> MongoDB Memory store.",
+    tech: ["Next.js", "TypeScript", "WebSockets", "Redis", "MongoDB", "OpenAI API"],
+    challenges: "Handling token streaming overhead over active WebSocket connections without causing dashboard UI freezes.",
+    impact: "Smooth real-time chat with latency under 180ms.",
+    github: "https://github.com/gautam-sarraf",
+    nodes: ["Web Interface", "WS Socket Gateway", "Redis Queue", "OpenAI Stream", "Mongo DB"],
   },
   {
-    id: 6,
-    title: 'GGs Forex',
-    subtitle: 'Forex Information Dashboard',
-    category: ['Frontend'],
-    categoryDisplay: 'Frontend',
-    color: '#ff8800',
-    icon: '💹',
-    featured: false,
-    description: 'Modern, responsive forex information platform with interactive charts, live rate tracking, and intuitive dashboard interfaces for currency traders.',
-    features: [
-      'Modern responsive UI/UX',
-      'Interactive forex charts',
-      'Live market information',
-      'Mobile-first design',
-    ],
-    tech: ['React', 'JavaScript', 'CSS3', 'REST APIs', 'Chart.js'],
-    github: 'https://github.com/gautam-sarraf',
-    demo: null,
-    metrics: ['Responsive UI', 'Live data', 'Interactive charts'],
+    id: "teamsphere",
+    title: "TeamSphere Hub",
+    subtitle: "MERN Collaborative Suite",
+    description: "Collaboration platform with WebSocket channels, peer-to-peer audio calls, whiteboard sharing, and file logs.",
+    problem: "Disjointed team tool chains (chat, whiteboards, calls) lead to context switching and productivity leaks.",
+    architecture: "React Gateway -> Express API -> Socket.io Server -> WebRTC Mesh -> MongoDB.",
+    tech: ["MongoDB", "Express", "React", "Node.js", "Socket.io", "WebRTC"],
+    challenges: "Synchronizing state updates on the interactive canvas whiteboard for dozens of concurrent peer clients.",
+    impact: "Consolidated team files and chat pipelines into a single portal.",
+    github: "https://github.com/Gautam-Sarraf/TeamSphere",
+    nodes: ["Team Clients", "Socket.io Server", "WebRTC Peer", "Mongo Cluster"],
   },
   {
-    id: 7,
-    title: 'PMCH',
-    subtitle: 'Healthcare Management Portal',
-    category: ['Frontend'],
-    categoryDisplay: 'Frontend',
-    color: '#00d4ff',
-    icon: '🏥',
-    featured: false,
-    description: 'Comprehensive healthcare portal UI with patient management, appointment scheduling, and admin dashboards designed for hospital management systems.',
-    features: [
-      'Patient registration and management',
-      'Appointment scheduling system',
-      'Admin control dashboards',
-      'Fully responsive design',
-    ],
-    tech: ['React', 'TypeScript', 'Tailwind', 'Node.js', 'MongoDB'],
-    github: 'https://github.com/gautam-sarraf',
-    demo: null,
-    metrics: ['Healthcare UI', 'Responsive', 'Admin panel'],
+    id: "marketplace",
+    title: "Marketplace Platform",
+    subtitle: "Full Stack Storefront",
+    description: "High-performance ecommerce portal with elastic search, product metrics, and checkout pipelines.",
+    problem: "Slow database search and sluggish page loads reduce cart conversions in high-traffic product catalog listings.",
+    architecture: "Next.js Frontend -> Node API -> ElasticSearch Cluster -> Stripe Node -> MongoDB.",
+    tech: ["React", "Node.js", "Express", "MongoDB", "Stripe API", "Redux"],
+    challenges: "Implementing webhooks to securely process payments and update inventory indexes during concurrent race conditions.",
+    github: "https://github.com/gautam-sarraf",
+    nodes: ["Customer UI", "Products API", "Stripe Checkout", "Inventory Node", "Mongo DB"],
+  },
+  {
+    id: "ggs-forex",
+    title: "GGs Forex Board",
+    subtitle: "Exchange Rates Tracker",
+    description: "Live forex visualization panel tracking currency fluctuations and charts with responsive analytics.",
+    problem: "Sluggish rate fetches and static charts delay decision vectors for active currency trading operators.",
+    architecture: "React Frontend -> Forex API -> Chart.js renderer -> Live Alert Hook.",
+    tech: ["React", "JavaScript", "Chart.js", "REST API", "CSS3"],
+    challenges: "Structuring canvas chart re-draw routines to load years of historical forex trends seamlessly on mobile screens.",
+    github: "https://github.com/gautam-sarraf",
+    nodes: ["Visitor Client", "Forex Stream", "Chart.js Render", "Alert Dispatcher"],
+  },
+  {
+    id: "pmch-portal",
+    title: "PMCH Platform",
+    subtitle: "Healthcare Admin System",
+    description: "Holographic patient tracker, appointment planner, and clinical diagnostic workflow logs.",
+    problem: "Hospital intake logs suffer from cluttered UIs and complex clinical routing interfaces, causing operational slowdowns.",
+    architecture: "React Core -> Node Gateway -> MongoDB Hospital cluster -> Admin Shield.",
+    tech: ["React", "TypeScript", "Tailwind", "Node.js", "MongoDB"],
+    challenges: "Strict compliance schema constraints and ensuring atomic record updates across different clinic departments.",
+    github: "https://github.com/gautam-sarraf",
+    nodes: ["Patient Intake", "Admin Router", "Node Sanitizer", "MongoDB Medical"],
   },
 ];
 
-const FILTERS = ['All', 'AI', 'Backend', 'Frontend', 'Full Stack', 'Automation'];
+// Blueprint canvas visualizer component
+const BlueprintVisualizer: React.FC<{ nodes: string[] }> = ({ nodes }) => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
-const ProjectCard: React.FC<{
-  project: typeof PROJECTS[0]; delay: number; isInView: boolean;
-}> = ({ project, delay, isInView }) => {
-  const [hovered, setHovered] = useState(false);
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let animId: number;
+    let time = 0;
+
+    const render = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      time += 0.04;
+
+      const nodeCount = nodes.length;
+      const centerY = canvas.height / 2;
+      const stepX = canvas.width / (nodeCount + 0.5);
+
+      const nodeCoords = nodes.map((name, idx) => ({
+        name,
+        x: stepX * (idx + 0.75),
+        y: centerY + Math.sin(time + idx) * 4, // floating
+      }));
+
+      // Draw connection lines
+      ctx.strokeStyle = 'rgba(0, 253, 216, 0.25)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      for (let i = 0; i < nodeCoords.length - 1; i++) {
+        ctx.moveTo(nodeCoords[i].x, nodeCoords[i].y);
+        ctx.lineTo(nodeCoords[i + 1].x, nodeCoords[i + 1].y);
+      }
+      ctx.stroke();
+
+      // Draw flowing packets/energy particles
+      nodeCoords.forEach((node, idx) => {
+        if (idx < nodeCoords.length - 1) {
+          const nextNode = nodeCoords[idx + 1];
+          const t = (time * 0.4 + idx * 0.2) % 1.0;
+          
+          const px = node.x + (nextNode.x - node.x) * t;
+          const py = node.y + (nextNode.y - node.y) * t;
+
+          ctx.fillStyle = '#a855f7';
+          ctx.beginPath();
+          ctx.arc(px, py, 4, 0, Math.PI * 2);
+          ctx.fill();
+
+          // pulse glow
+          ctx.fillStyle = 'rgba(168, 85, 247, 0.2)';
+          ctx.beginPath();
+          ctx.arc(px, py, 8, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      });
+
+      // Draw nodes
+      nodeCoords.forEach((node) => {
+        // glowing background
+        ctx.fillStyle = 'rgba(7, 10, 30, 0.9)';
+        ctx.strokeStyle = 'var(--cyber-cyan)';
+        ctx.lineWidth = 2;
+        
+        ctx.beginPath();
+        ctx.rect(node.x - 45, node.y - 18, 90, 36);
+        ctx.fill();
+        ctx.stroke();
+
+        // mini brackets
+        ctx.strokeStyle = 'rgba(0, 253, 216, 0.5)';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(node.x - 49, node.y - 22, 98, 44);
+
+        // Node text label
+        ctx.fillStyle = '#e2e8f0';
+        ctx.font = '8px "Share Tech Mono"';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(node.name.toUpperCase(), node.x, node.y);
+      });
+
+      animId = requestAnimationFrame(render);
+    };
+
+    render();
+    return () => cancelAnimationFrame(animId);
+  }, [nodes]);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 40 }}
-      animate={isInView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.5, delay }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        position: 'relative',
-        background: 'rgba(10,10,30,0.9)',
-        border: `1px solid ${hovered ? project.color + '60' : 'rgba(255,255,255,0.06)'}`,
-        borderRadius: 14,
-        overflow: 'hidden',
-        transition: 'all 0.3s ease',
-        boxShadow: hovered ? `0 20px 60px ${project.color}15, 0 0 0 1px ${project.color}20` : '0 4px 20px rgba(0,0,0,0.3)',
-        transform: hovered ? 'translateY(-6px)' : 'none',
-        cursor: 'default',
-      }}
-    >
-      {/* Featured badge */}
-      {project.featured && (
-        <div style={{
-          position: 'absolute', top: 16, right: 16,
-          padding: '3px 10px',
-          background: `${project.color}20`,
-          border: `1px solid ${project.color}50`,
-          borderRadius: 100,
-          fontFamily: 'var(--font-mono)', fontSize: 9, color: project.color,
-          letterSpacing: '1px', zIndex: 2,
-        }}>
-          ⭐ FEATURED
-        </div>
-      )}
-
-      {/* Top color bar */}
-      <div style={{ height: 3, background: `linear-gradient(90deg, ${project.color}, ${project.color}40)` }} />
-
-      <div style={{ padding: '24px' }}>
-        {/* Icon + title */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 14 }}>
-          <div style={{
-            width: 48, height: 48, borderRadius: 10,
-            background: `${project.color}15`,
-            border: `1px solid ${project.color}40`,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 24, flexShrink: 0,
-            boxShadow: hovered ? `0 0 20px ${project.color}30` : 'none',
-            transition: 'box-shadow 0.3s',
-          }}>
-            {project.icon}
-          </div>
-          <div>
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, color: project.color, fontWeight: 700 }}>
-              {project.title}
-            </div>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-muted)', letterSpacing: '1px', marginTop: 2 }}>
-              {project.subtitle}
-            </div>
-          </div>
-        </div>
-
-        {/* Category */}
-        <div style={{
-          display: 'inline-block', padding: '3px 10px',
-          background: `${project.color}10`, border: `1px solid ${project.color}25`,
-          borderRadius: 4, fontFamily: 'var(--font-mono)', fontSize: 9,
-          color: project.color, letterSpacing: '1px', marginBottom: 14,
-        }}>
-          {project.categoryDisplay}
-        </div>
-
-        {/* Description */}
-        <p style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: '#a0b4c8', lineHeight: 1.7, marginBottom: 18 }}>
-          {project.description}
-        </p>
-
-        {/* Features */}
-        <div style={{ marginBottom: 18 }}>
-          {project.features.slice(0, 3).map((f, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 6, fontFamily: 'var(--font-body)', fontSize: 11, color: '#8099b0', lineHeight: 1.5 }}>
-              <ChevronRight size={11} color={project.color} style={{ flexShrink: 0, marginTop: 2 }} />
-              {f}
-            </div>
-          ))}
-        </div>
-
-        {/* Metrics */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 18 }}>
-          {project.metrics.map(m => (
-            <span key={m} style={{
-              padding: '3px 10px', borderRadius: 4,
-              fontFamily: 'var(--font-mono)', fontSize: 9,
-              background: `${project.color}12`,
-              color: project.color,
-              border: `1px solid ${project.color}25`,
-              letterSpacing: '1px',
-            }}>
-              {m}
-            </span>
-          ))}
-        </div>
-
-        {/* Tech stack */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 20 }}>
-          {project.tech.map(t => (
-            <span key={t} style={{
-              padding: '4px 9px', borderRadius: 4,
-              fontFamily: 'var(--font-mono)', fontSize: 9,
-              color: 'var(--text-muted)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              letterSpacing: '0.5px',
-            }}>
-              {t}
-            </span>
-          ))}
-        </div>
-
-        {/* Links */}
-        <div style={{ display: 'flex', gap: 10 }}>
-          {project.github && (
-            <a
-              href={project.github}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: 6,
-                padding: '9px 16px',
-                fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '1px',
-                color: project.color,
-                border: `1px solid ${project.color}40`,
-                borderRadius: 6, textDecoration: 'none',
-                background: `${project.color}08`,
-                transition: 'all 0.2s',
-                cursor: 'none',
-              }}
-            >
-              <Github size={13} /> CODE
-            </a>
-          )}
-          {project.demo && (
-            <a
-              href={project.demo}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: 6,
-                padding: '9px 16px',
-                fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '1px',
-                color: '#000',
-                background: project.color,
-                borderRadius: 6, textDecoration: 'none',
-                border: 'none',
-                transition: 'all 0.2s',
-                cursor: 'none',
-              }}
-            >
-              <ExternalLink size={13} /> LIVE
-            </a>
-          )}
-        </div>
+    <div className="bg-slate-950/80 border border-slate-900 rounded p-4 relative h-40 overflow-hidden">
+      <div className="absolute top-2 left-3 font-mono text-[9px] text-slate-500 tracking-wider flex items-center gap-2">
+        <Network size={11} className="text-cyan-400" />
+        TACTICAL_ARCHITECTURE_FLOWSHEET
       </div>
-    </motion.div>
+      <canvas
+        ref={canvasRef}
+        width={500}
+        height={160}
+        style={{ width: '100%', height: '100%' }}
+      />
+    </div>
   );
 };
 
 const Projects: React.FC = () => {
-  const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, margin: '-80px' });
-  const [activeFilter, setActiveFilter] = useState('All');
+  const [activeIdx, setActiveIdx] = useState(0);
+  const activeMission = MISSIONS[activeIdx];
 
-  const filtered = activeFilter === 'All'
-    ? PROJECTS
-    : PROJECTS.filter(p => p.category.includes(activeFilter));
+  const handleSelect = (idx: number) => {
+    spaceAudio.playClick();
+    setActiveIdx(idx);
+  };
 
   return (
-    <section id="projects" ref={ref} style={{ padding: '100px 24px', background: 'var(--bg-primary)', position: 'relative', overflow: 'hidden' }}>
-      <div style={{ position: 'absolute', top: '40%', right: '-8%', width: 500, height: 500, background: 'radial-gradient(circle, rgba(139,0,255,0.04) 0%, transparent 70%)', pointerEvents: 'none' }} />
-
-      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-        <SectionHeader
-          tag="04"
-          label="PROJECTS"
-          title="Project Archive"
-          subtitle={`${PROJECTS.length} projects shipped. All systems green.`}
-          isInView={isInView}
-        />
-
-        {/* Filter tabs */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 0.3 }}
-          style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap', marginTop: 48, marginBottom: 48 }}
-        >
-          {FILTERS.map(filter => (
+    <div
+      style={{
+        width: '100%',
+        height: '100%',
+        display: 'grid',
+        gridTemplateColumns: 'minmax(240px, 1fr) 2fr',
+        gap: 20,
+        padding: '24px',
+        overflow: 'hidden',
+      }}
+      className="flex flex-col lg:grid"
+    >
+      {/* Left panel: Mission list */}
+      <div
+        className="hud-panel p-4 overflow-y-auto flex flex-col gap-2 max-h-[40vh] lg:max-h-[82vh]"
+        style={{ border: '1px solid rgba(var(--cyber-cyan-rgb), 0.25)' }}
+      >
+        <div className="font-mono text-[10px] tracking-wider text-slate-400 border-b border-slate-900 pb-2 mb-2 flex items-center gap-2">
+          <Shield size={12} className="text-cyan-400" />
+          AVAILABLE_MISSIONS
+        </div>
+        
+        {MISSIONS.map((m, idx) => {
+          const isActive = idx === activeIdx;
+          return (
             <button
-              key={filter}
-              onClick={() => setActiveFilter(filter)}
+              key={m.id}
+              onClick={() => handleSelect(idx)}
+              onMouseEnter={() => spaceAudio.playHover()}
               style={{
-                padding: '9px 18px',
-                fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '2px',
-                cursor: 'none', border: 'none', borderRadius: 6,
-                background: activeFilter === filter ? 'var(--cyber-cyan)' : 'rgba(255,255,255,0.04)',
-                color: activeFilter === filter ? '#000' : 'var(--text-muted)',
-                boxShadow: activeFilter === filter ? '0 0 20px rgba(0,212,255,0.3)' : 'none',
+                width: '100%',
+                padding: '12px 14px',
+                textAlign: 'left',
+                borderRadius: 6,
+                border: 'none',
+                background: isActive ? 'linear-gradient(135deg, rgba(var(--cyber-cyan-rgb), 0.15), rgba(var(--cyber-green-rgb), 0.05))' : 'rgba(255,255,255,0.02)',
+                color: isActive ? 'var(--cyber-cyan)' : 'var(--text-primary)',
+                borderLeft: isActive ? '3px solid var(--cyber-cyan)' : '3px solid transparent',
+                cursor: 'none',
                 transition: 'all 0.2s',
               }}
+              className="flex justify-between items-center group hover:bg-slate-900/60"
             >
-              {filter}
+              <div>
+                <div className="font-mono text-[11px] font-bold tracking-wider">{m.title.toUpperCase()}</div>
+                <div className="font-mono text-[8px] text-slate-500 mt-0.5 tracking-widest">{m.subtitle.toUpperCase()}</div>
+              </div>
+              <span className="text-[10px] opacity-25 group-hover:opacity-100 transition-opacity">🛡️</span>
             </button>
-          ))}
-        </motion.div>
-
-        {/* Projects grid */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeFilter}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))',
-              gap: 24,
-            }}
-          >
-            {filtered.map((project, i) => (
-              <ProjectCard key={project.id} project={project} delay={i * 0.08} isInView={isInView} />
-            ))}
-          </motion.div>
-        </AnimatePresence>
+          );
+        })}
       </div>
-    </section>
+
+      {/* Right panel: Active Mission Details */}
+      <div
+        className="hud-panel p-6 overflow-y-auto flex flex-col gap-5 max-h-[60vh] lg:max-h-[82vh]"
+        style={{ border: '1px solid rgba(var(--cyber-cyan-rgb), 0.25)' }}
+      >
+        {/* Mission top banner */}
+        <div className="flex justify-between items-start border-b border-slate-900 pb-4">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="px-2 py-0.5 bg-cyan-900/50 border border-cyan-500/40 text-cyan-400 font-mono text-[8px] tracking-widest rounded-sm">
+                MISSION ACTIVE
+              </span>
+              <span className="text-slate-600 font-mono text-[9px]">FILE://{activeMission.id}.obj</span>
+            </div>
+            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 900, color: 'var(--cyber-cyan)' }}>
+              {activeMission.title}
+            </h2>
+            <p className="font-mono text-[10px] text-slate-400 tracking-wider uppercase mt-1">
+              Objective: {activeMission.subtitle}
+            </p>
+          </div>
+
+          <div className="flex gap-2">
+            <a
+              href={activeMission.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              onMouseEnter={() => spaceAudio.playHover()}
+              className="p-2 border border-slate-800 hover:border-cyan-500/40 text-slate-400 hover:text-cyan-400 rounded transition-colors cursor-none bg-slate-950/60"
+            >
+              <GitPullRequest size={14} />
+            </a>
+            {activeMission.demo && (
+              <a
+                href={activeMission.demo}
+                target="_blank"
+                rel="noopener noreferrer"
+                onMouseEnter={() => spaceAudio.playHover()}
+                className="p-2 bg-cyan-500 hover:bg-cyan-400 text-slate-950 rounded transition-colors cursor-none flex items-center gap-1.5 font-mono text-[9px] font-bold"
+              >
+                <ExternalLink size={11} /> LAUNCH
+              </a>
+            )}
+          </div>
+        </div>
+
+        {/* Dynamic Canvas System Blueprint */}
+        <BlueprintVisualizer nodes={activeMission.nodes} />
+
+        {/* Detailed mission logs */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 font-mono text-[10px] leading-relaxed">
+          <div className="border border-slate-900/60 p-4 bg-slate-950/40 rounded flex flex-col gap-2">
+            <span className="text-pink-500 tracking-wider border-b border-slate-900 pb-1 mb-1 font-bold">
+              [PROBLEM DEFINITION]
+            </span>
+            <span className="text-slate-300">{activeMission.problem}</span>
+          </div>
+
+          <div className="border border-slate-900/60 p-4 bg-slate-950/40 rounded flex flex-col gap-2">
+            <span className="text-cyan-400 tracking-wider border-b border-slate-900 pb-1 mb-1 font-bold">
+              [INTELLIGENT ARCHITECTURE]
+            </span>
+            <span className="text-slate-300">{activeMission.architecture}</span>
+          </div>
+
+          <div className="border border-slate-900/60 p-4 bg-slate-950/40 rounded flex flex-col gap-2">
+            <span className="text-orange-400 tracking-wider border-b border-slate-900 pb-1 mb-1 font-bold">
+              [CRITICAL CHALLENGES]
+            </span>
+            <span className="text-slate-300">{activeMission.challenges}</span>
+          </div>
+
+          <div className="border border-slate-900/60 p-4 bg-slate-950/40 rounded flex flex-col gap-2">
+            <span className="text-green-400 tracking-wider border-b border-slate-900 pb-1 mb-1 font-bold">
+              [MISSION IMPACT / METRICS]
+            </span>
+            <span className="text-slate-300 flex items-start gap-2">
+              <CheckCircle size={12} className="text-green-400 mt-0.5 flex-shrink-0" />
+              {activeMission.impact}
+            </span>
+          </div>
+        </div>
+
+        {/* Tech Stack inventory tags */}
+        <div className="border-t border-slate-900 pt-4 flex flex-wrap gap-2 items-center">
+          <FileCode size={13} className="text-slate-500" />
+          <span className="font-mono text-[9px] text-slate-500 tracking-widest uppercase mr-2">EQUIPPED MODULES:</span>
+          {activeMission.tech.map((t) => (
+            <span
+              key={t}
+              className="px-2.5 py-1 bg-slate-900 border border-slate-800 text-cyan-400 font-mono text-[9px] tracking-wider rounded-sm hover:border-cyan-500/30 transition-all"
+            >
+              {t}
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 };
 

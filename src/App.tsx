@@ -1,263 +1,237 @@
-import React, { useState, useEffect, Component } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
-import Navbar, { ScrollProgressUpdater } from './components/Navbar';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import Navbar from './components/Navbar';
+import SpaceCanvas from './components/SpaceCanvas';
 import Hero from './components/Hero';
-import About from './components/About';
 import Skills from './components/Skills';
-import Experience from './components/Experience';
 import Projects from './components/Projects';
-import Achievements from './components/Achievements';
+import Experience from './components/Experience';
 import Contact from './components/Contact';
-import InteractiveTerminal from './components/InteractiveTerminal';
-import CursorTrail from './components/CursorTrail';
-import MatrixRain from './components/MatrixRain';
-import AmongUsFollower from './components/AmongUsFollower';
+import AiAssistant from './components/AiAssistant';
+import { spaceAudio } from './utils/audio';
+import { Cpu, ShieldCheck, Database, HardDrive } from 'lucide-react';
 
-// Error Boundary — catches React crashes so you see an error instead of white screen
-class ErrorBoundary extends Component<
-  { children: React.ReactNode },
-  { hasError: boolean; error: string }
-> {
-  constructor(props: { children: React.ReactNode }) {
-    super(props);
-    this.state = { hasError: false, error: '' };
-  }
-  static getDerivedStateFromError(error: Error) {
-    return { hasError: true, error: error.message };
-  }
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div style={{
-          minHeight: '100vh', background: '#050510', color: '#00d4ff',
-          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-          fontFamily: 'monospace', padding: 24, textAlign: 'center', gap: 16,
-        }}>
-          <div style={{ fontSize: 48 }}>⚠️</div>
-          <div style={{ fontSize: 20, color: '#ff0080' }}>SYSTEM ERROR</div>
-          <div style={{ fontSize: 13, color: '#6080a0', maxWidth: 500 }}>{this.state.error}</div>
-          <button
-            onClick={() => window.location.reload()}
-            style={{ padding: '10px 24px', background: '#00d4ff', color: '#000', border: 'none', borderRadius: 6, cursor: 'pointer', fontFamily: 'monospace', fontSize: 13 }}
-          >
-            REBOOT
-          </button>
-        </div>
-      );
-    }
-    return this.props.children;
-  }
-}
+const SystemMonitorHUD: React.FC = () => {
+  const [cpu, setCpu] = useState(12);
+  const [gpu, setGpu] = useState(42);
+  const [mem, setMem] = useState(5.4);
 
-
-// Loading screen
-const LoadingScreen: React.FC<{ done: boolean }> = ({ done }) => (
-  <AnimatePresence>
-    {!done && (
-      <motion.div
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.6 }}
-        style={{
-          position: 'fixed', inset: 0, zIndex: 99999,
-          background: 'var(--bg-primary)',
-          display: 'flex', flexDirection: 'column',
-          alignItems: 'center', justifyContent: 'center',
-          gap: 24,
-        }}
-      >
-        <div style={{
-          fontFamily: 'var(--font-display)',
-          fontSize: 'clamp(24px, 5vw, 48px)',
-          fontWeight: 900,
-          background: 'linear-gradient(135deg, #fff, var(--cyber-cyan))',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          backgroundClip: 'text',
-          letterSpacing: '-1px',
-        }}>
-          GS://
-        </div>
-        <div style={{ display: 'flex', gap: 6 }}>
-          {[0, 1, 2].map(i => (
-            <motion.div
-              key={i}
-              animate={{ scale: [1, 1.5, 1], opacity: [0.4, 1, 0.4] }}
-              transition={{ repeat: Infinity, duration: 0.9, delay: i * 0.2 }}
-              style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--cyber-cyan)' }}
-            />
-          ))}
-        </div>
-        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)', letterSpacing: '3px' }}>
-          INITIALIZING...
-        </div>
-      </motion.div>
-    )}
-  </AnimatePresence>
-);
-
-// Footer
-const Footer: React.FC = () => (
-  <footer style={{
-    padding: '32px 24px',
-    background: 'var(--bg-secondary)',
-    borderTop: '1px solid rgba(0,212,255,0.1)',
-    textAlign: 'center',
-  }}>
-    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)', letterSpacing: '2px' }}>
-      <span style={{ color: 'var(--cyber-cyan)' }}>GAUTAM SARRAF</span> · Built with React + Framer Motion
-    </div>
-    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'rgba(100,120,140,0.5)', marginTop: 8, letterSpacing: '1px' }}>
-      © 2026 · All systems operational
-    </div>
-  </footer>
-);
-
-// Command palette (Ctrl+K)
-const CommandPalette: React.FC<{ open: boolean; onClose: () => void }> = ({ open, onClose }) => {
-  const items = [
-    { label: 'Go to Home', action: () => { document.getElementById('home')?.scrollIntoView({ behavior: 'smooth' }); onClose(); } },
-    { label: 'Go to About', action: () => { document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' }); onClose(); } },
-    { label: 'Go to Skills', action: () => { document.getElementById('skills')?.scrollIntoView({ behavior: 'smooth' }); onClose(); } },
-    { label: 'Go to Experience', action: () => { document.getElementById('experience')?.scrollIntoView({ behavior: 'smooth' }); onClose(); } },
-    { label: 'Go to Projects', action: () => { document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' }); onClose(); } },
-    { label: 'Go to Contact', action: () => { document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }); onClose(); } },
-    { label: 'Open GitHub', action: () => { window.open('https://github.com/gautam-sarraf', '_blank'); onClose(); } },
-    { label: 'Open LinkedIn', action: () => { window.open('https://linkedin.com/in/gautam-sarraf', '_blank'); onClose(); } },
-  ];
+  // Simulate real-time hardware HUD diagnostics
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCpu(Math.floor(Math.random() * 8) + 8);
+      setGpu(Math.floor(Math.random() * 4) + 40);
+      setMem(parseFloat((5.2 + Math.random() * 0.3).toFixed(1)));
+    }, 3000);
+    return () => clearInterval(timer);
+  }, []);
 
   return (
-    <AnimatePresence>
-      {open && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={onClose}
-          style={{
-            position: 'fixed', inset: 0, background: 'rgba(5,5,16,0.85)',
-            backdropFilter: 'blur(8px)', zIndex: 9000,
-            display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
-            paddingTop: '18vh',
-          }}
-        >
-          <motion.div
-            initial={{ opacity: 0, y: -20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -10, scale: 0.95 }}
-            onClick={e => e.stopPropagation()}
-            style={{
-              width: 'min(520px, 92vw)',
-              background: 'rgba(8,8,20,0.98)',
-              border: '1px solid rgba(0,212,255,0.3)',
-              borderRadius: 14, overflow: 'hidden',
-              boxShadow: '0 25px 60px rgba(0,0,0,0.8)',
-            }}
-          >
-            <div style={{ padding: '14px 16px', borderBottom: '1px solid rgba(0,212,255,0.1)', display: 'flex', gap: 10, alignItems: 'center' }}>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--cyber-cyan)' }}>⌘</span>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)', letterSpacing: '2px' }}>COMMAND PALETTE</span>
-              <span style={{ marginLeft: 'auto', fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-muted)', padding: '2px 8px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 4 }}>ESC to close</span>
-            </div>
-            <div style={{ padding: '8px' }}>
-              {items.map((item, i) => (
-                <motion.button
-                  key={item.label}
-                  onClick={item.action}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.03 }}
-                  whileHover={{ background: 'rgba(0,212,255,0.08)', x: 4 }}
-                  style={{
-                    width: '100%', padding: '12px 16px',
-                    background: 'none', border: 'none',
-                    fontFamily: 'var(--font-mono)', fontSize: 12,
-                    color: 'var(--text-primary)', textAlign: 'left',
-                    borderRadius: 8, cursor: 'none',
-                    display: 'flex', alignItems: 'center', gap: 12,
-                    letterSpacing: '0.5px',
-                  }}
-                >
-                  <span style={{ color: 'var(--cyber-cyan)', opacity: 0.5 }}>›</span>
-                  {item.label}
-                </motion.button>
-              ))}
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <div
+      className="hud-panel p-4 flex flex-col gap-3 font-mono text-[10px]"
+      style={{ border: '1px solid rgba(var(--cyber-cyan-rgb), 0.25)' }}
+    >
+      <div className="border-b border-slate-900 pb-2 text-slate-400 tracking-wider flex items-center gap-2">
+        <Cpu size={12} className="text-cyan-400 animate-spin" style={{ animationDuration: '8s' }} />
+        TACTICAL_HARDWARE_HUD
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <div className="flex justify-between items-center">
+          <span className="text-slate-500">AI CORE LOAD (CPU):</span>
+          <span className="text-cyan-400 font-bold">{cpu}%</span>
+        </div>
+        <div className="h-1 bg-slate-900 rounded overflow-hidden">
+          <div style={{ width: `${cpu * 4}%` }} className="h-full bg-cyan-400" />
+        </div>
+
+        <div className="flex justify-between items-center mt-1">
+          <span className="text-slate-500">WARP ENGINE (GPU):</span>
+          <span className="text-green-400 font-bold">{gpu}°C</span>
+        </div>
+        <div className="h-1 bg-slate-900 rounded overflow-hidden">
+          <div style={{ width: `${gpu}%` }} className="h-full bg-green-400" />
+        </div>
+
+        <div className="flex justify-between items-center mt-1">
+          <span className="text-slate-500">MEMORY VECTOR DEPTH:</span>
+          <span className="text-pink-400 font-bold">{mem}GB / 32GB</span>
+        </div>
+        <div className="h-1 bg-slate-900 rounded overflow-hidden">
+          <div style={{ width: `${(mem / 32) * 100}%` }} className="h-full bg-pink-400" />
+        </div>
+      </div>
+
+      <div className="border-t border-slate-900 pt-2 flex flex-col gap-1.5 text-slate-500 text-[8px]">
+        <div className="flex justify-between">
+          <span>COGNITIVE THREADS:</span>
+          <span className="text-cyan-400">12 ACTIVE</span>
+        </div>
+        <div className="flex justify-between">
+          <span>DOCK SHIELD CAP:</span>
+          <span className="text-cyan-400">100% OK</span>
+        </div>
+        <div className="flex justify-between">
+          <span>ATMOSPHERE PURGE:</span>
+          <span className="text-cyan-400">STABLE</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const QuickSystemIndex: React.FC = () => {
+  return (
+    <div
+      className="hud-panel p-4 flex flex-col gap-3 font-mono text-[10px]"
+      style={{ border: '1px solid rgba(var(--cyber-cyan-rgb), 0.25)' }}
+    >
+      <div className="border-b border-slate-900 pb-2 text-slate-400 tracking-wider flex items-center gap-2">
+        <Database size={12} className="text-cyan-400" />
+        CENTRAL_DATABASE_CORES
+      </div>
+
+      <div className="flex flex-col gap-2.5 text-slate-400 text-[9px] leading-relaxed">
+        <div className="flex gap-2 items-start">
+          <ShieldCheck size={12} className="text-cyan-400 mt-0.5 flex-shrink-0" />
+          <div>
+            <span className="font-bold text-slate-300">RAG ARCHITECTURES</span>
+            <p className="text-[8px] text-slate-500">Semantic contextual vector routing indices parsed and tested.</p>
+          </div>
+        </div>
+        <div className="flex gap-2 items-start">
+          <HardDrive size={12} className="text-green-400 mt-0.5 flex-shrink-0" />
+          <div>
+            <span className="font-bold text-slate-300">AUTOMATION DRIVES</span>
+            <p className="text-[8px] text-slate-500">Multi-stage corporate KYC scraping and schedule solvers.</p>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 
 function App() {
-  const [loaded, setLoaded] = useState(false);
-  const [matrixActive, setMatrixActive] = useState(false);
-  const [commandPalette, setCommandPalette] = useState(false);
+  const [mode, setMode] = useState('intro');
+  const [booted, setBooted] = useState(false);
+  const [audioMuted, setAudioMuted] = useState(true);
 
+  // States linking Skill planet zooms and Timeline stations
+  const [selectedSkill, setSelectedSkill] = useState<string | null>(null);
+  const [selectedTimelineIndex, setSelectedTimelineIndex] = useState(4); // Default to current role
 
-  useEffect(() => {
-    // Simulate loading delay
-    const timer = setTimeout(() => setLoaded(true), 1200);
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Keyboard shortcuts
-  useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-        e.preventDefault();
-        setCommandPalette(prev => !prev);
-      }
-      if (e.key === 'Escape') {
-        setCommandPalette(false);
-      }
-    };
-    window.addEventListener('keydown', handleKey);
-    return () => window.removeEventListener('keydown', handleKey);
-  }, []);
+  // Force sound system to sync on user bootup
+  const handleBootComplete = () => {
+    setBooted(true);
+  };
 
   return (
-    <>
-      <LoadingScreen done={loaded} />
-      <CursorTrail />
-      <MatrixRain active={matrixActive} />
-      <ScrollProgressUpdater />
-      <CommandPalette open={commandPalette} onClose={() => setCommandPalette(false)} />
+    <div className="crt-screen relative w-screen h-screen overflow-hidden bg-black text-slate-200 select-none">
+      {/* 3D WebGL Space Canvas backdrop */}
+      <SpaceCanvas
+        mode={mode}
+        selectedSkill={selectedSkill}
+        selectedTimelineIndex={selectedTimelineIndex}
+        onPlanetClick={(planet) => {
+          setSelectedSkill(planet);
+          setMode('skills');
+        }}
+      />
 
-      {/* Keyboard shortcut hint */}
-      <div style={{
-        position: 'fixed', top: 24, right: 24, zIndex: 100,
-        fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-muted)',
-        letterSpacing: '1px', display: 'flex', alignItems: 'center', gap: 6,
-        opacity: loaded ? 0.6 : 0, transition: 'opacity 1s 2s',
-      }}>
-        <span style={{ padding: '2px 6px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 4 }}>⌘K</span>
-        PALETTE
+      {/* Futuristic Grid Cockpit HUD border overlay */}
+      <div className="absolute inset-0 border border-cyan-500/10 pointer-events-none z-50">
+        {/* Subtle grid corner brackets */}
+        <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-cyan-400/40" />
+        <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-cyan-400/40" />
+        <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-cyan-400/40" />
+        <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-cyan-400/40" />
       </div>
 
-      <div id="app-root">
-        <Navbar />
-        <main>
-          <Hero />
-          <About />
-          <Skills />
-          <Experience />
-          <Projects />
-          <Achievements />
-          <Contact />
-        </main>
-        <Footer />
-        <InteractiveTerminal onToggleMatrix={() => setMatrixActive(p => !p)} matrixActive={matrixActive} />
-        <AmongUsFollower />
+      {/* Top Nav Control HUD */}
+      {booted && (
+        <Navbar
+          mode={mode}
+          setMode={(m) => {
+            setMode(m);
+            // reset zoom targets upon tab change
+            if (m !== 'skills') setSelectedSkill(null);
+          }}
+          audioMuted={audioMuted}
+          toggleAudio={() => {
+            const next = !audioMuted;
+            setAudioMuted(next);
+            spaceAudio.setMute(next);
+          }}
+        />
+      )}
+
+      {/* Main Content frame */}
+      <div className="w-full h-full pt-16 px-4 md:px-6 pb-6 relative z-10 flex items-center justify-center">
+        {!booted ? (
+          <Hero
+            onBootComplete={handleBootComplete}
+            audioMuted={audioMuted}
+          />
+        ) : (
+          <div
+            style={{
+              width: '100%',
+              height: '100%',
+              display: 'grid',
+              gridTemplateColumns: 'minmax(280px, 320px) 1fr minmax(240px, 280px)',
+              gap: 20,
+            }}
+            className="flex flex-col lg:grid"
+          >
+            {/* Left HUD Panel (AI Voice Assistant) */}
+            <div className="hidden lg:flex flex-col h-full max-h-[82vh]">
+              <AiAssistant audioMuted={audioMuted} />
+            </div>
+
+            {/* Central Dashboard HUD panel */}
+            <div className="flex-1 h-full max-h-[75vh] lg:max-h-[82vh] overflow-hidden">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={mode}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.4 }}
+                  className="w-full h-full"
+                >
+                  {mode === 'intro' && (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <Hero onBootComplete={() => {}} audioMuted={audioMuted} />
+                    </div>
+                  )}
+                  {mode === 'skills' && (
+                    <Skills
+                      selectedSkill={selectedSkill}
+                      setSelectedSkill={setSelectedSkill}
+                    />
+                  )}
+                  {mode === 'missions' && <Projects />}
+                  {mode === 'timeline' && (
+                    <Experience
+                      selectedIndex={selectedTimelineIndex}
+                      setSelectedIndex={setSelectedTimelineIndex}
+                    />
+                  )}
+                  {mode === 'contact' && <Contact />}
+                </motion.div>
+              </AnimatePresence>
+            </div>
+
+            {/* Right HUD Panel (Cockpit System Monitors) */}
+            <div className="hidden lg:flex flex-col gap-4 h-full max-h-[82vh]">
+              <SystemMonitorHUD />
+              <QuickSystemIndex />
+            </div>
+          </div>
+        )}
       </div>
-    </>
+    </div>
   );
 }
 
-const WrappedApp: React.FC = () => (
-  <ErrorBoundary>
-    <App />
-  </ErrorBoundary>
-);
-
-export default WrappedApp;
+export default App;

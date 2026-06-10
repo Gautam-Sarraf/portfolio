@@ -187,7 +187,7 @@ const InteractiveTerminal: React.FC<{
     switch (type) {
       case 'input': return 'var(--cyber-green)';
       case 'error': return 'var(--cyber-pink)';
-      case 'system': return 'rgba(0, 212, 255, 0.6)';
+      case 'system': return 'rgba(var(--cyber-cyan-rgb), 0.6)';
       default: return '#a0c0d8';
     }
   };
@@ -202,13 +202,13 @@ const InteractiveTerminal: React.FC<{
         style={{
           position: 'fixed', bottom: 28, right: 28,
           width: 54, height: 54, borderRadius: '50%',
-          background: 'linear-gradient(135deg, rgba(0,212,255,0.2), rgba(0,255,136,0.2))',
-          border: '1px solid rgba(0,212,255,0.4)',
+          background: 'linear-gradient(135deg, rgba(var(--cyber-cyan-rgb),0.2), rgba(var(--cyber-green-rgb),0.2))',
+          border: '1px solid rgba(var(--cyber-cyan-rgb),0.4)',
           backdropFilter: 'blur(10px)',
           display: open ? 'none' : 'flex',
           alignItems: 'center', justifyContent: 'center',
           cursor: 'none', zIndex: 5000,
-          boxShadow: '0 0 20px rgba(0,212,255,0.2)',
+          boxShadow: '0 0 20px rgba(var(--cyber-cyan-rgb),0.2)',
           color: 'var(--cyber-cyan)',
         }}
         title="Open Terminal"
@@ -228,10 +228,10 @@ const InteractiveTerminal: React.FC<{
               position: 'fixed', bottom: 28, right: 28,
               width: 'min(600px, 94vw)', height: 420,
               background: 'rgba(4, 4, 12, 0.97)',
-              border: '1px solid rgba(0,212,255,0.3)',
+              border: '1px solid rgba(var(--cyber-cyan-rgb),0.3)',
               borderRadius: 12, overflow: 'hidden',
               zIndex: 5000,
-              boxShadow: '0 20px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(0,212,255,0.1)',
+              boxShadow: '0 20px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(var(--cyber-cyan-rgb),0.1)',
               display: 'flex', flexDirection: 'column',
               fontFamily: 'var(--font-mono)',
             }}
@@ -240,8 +240,8 @@ const InteractiveTerminal: React.FC<{
             {/* Title bar */}
             <div style={{
               padding: '10px 14px',
-              background: 'rgba(0,212,255,0.05)',
-              borderBottom: '1px solid rgba(0,212,255,0.15)',
+              background: 'rgba(var(--cyber-cyan-rgb),0.05)',
+              borderBottom: '1px solid rgba(var(--cyber-cyan-rgb),0.15)',
               display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0,
             }}>
               <div onClick={() => { setOpen(false); }} style={{ width: 11, height: 11, borderRadius: '50%', background: '#ff5f57', cursor: 'none' }} />
@@ -271,7 +271,7 @@ const InteractiveTerminal: React.FC<{
             <div style={{
               display: 'flex', alignItems: 'center', gap: 8,
               padding: '10px 16px',
-              borderTop: '1px solid rgba(0,212,255,0.1)',
+              borderTop: '1px solid rgba(var(--cyber-cyan-rgb),0.1)',
               background: 'rgba(0,0,0,0.3)',
               flexShrink: 0,
             }}>

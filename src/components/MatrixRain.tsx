@@ -30,9 +30,9 @@ const MatrixRain: React.FC<{ active: boolean }> = ({ active }) => {
         if (brightness > 0.98) {
           ctx.fillStyle = '#ffffff';
         } else if (brightness > 0.9) {
-          ctx.fillStyle = '#00ff88';
+          ctx.fillStyle = '#a855f7';
         } else {
-          ctx.fillStyle = 'rgba(0, 212, 255, 0.8)';
+          ctx.fillStyle = 'rgba(0, 253, 216, 0.8)';
         }
         ctx.fillText(char, i * fontSize, drops[i] * fontSize);
         if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
