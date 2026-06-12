@@ -112,48 +112,57 @@ const AiAssistant: React.FC<AiAssistantProps> = ({ audioMuted }) => {
     return () => cancelAnimationFrame(animId);
   }, [isTyping, isListening]);
 
-  const handleAsk = (userQuery: string) => {
+  const [chatHistory, setChatHistory] = useState<{ role: string; content: string }[]>([]);
+
+  const handleAsk = async (userQuery: string) => {
     if (!userQuery.trim()) return;
     spaceAudio.playClick();
     setIsTyping(true);
-    setResponse('Searching database...');
-    
-    setTimeout(() => {
-      const cleanQ = userQuery.toLowerCase();
-      let foundText = "Query not recognized. Please use the quick prompts below or ask about Gautam's skills, projects, or experience.";
+    setResponse('Querying neural network...');
 
-      if (cleanQ.includes('who') || cleanQ.includes('gautam')) {
-        foundText = KNOWLEDGE_BASE.gautam;
-      } else if (cleanQ.includes('ai') || cleanQ.includes('project')) {
-        if (cleanQ.includes('backend')) {
-          foundText = KNOWLEDGE_BASE.backend;
-        } else {
-          foundText = KNOWLEDGE_BASE.ai;
-        }
-      } else if (cleanQ.includes('backend') || cleanQ.includes('full')) {
-        foundText = KNOWLEDGE_BASE.backend;
-      } else if (cleanQ.includes('tech') || cleanQ.includes('skill') || cleanQ.includes('language') || cleanQ.includes('code')) {
-        foundText = KNOWLEDGE_BASE.tech;
-      } else if (cleanQ.includes('resume') || cleanQ.includes('cv') || cleanQ.includes('hire')) {
-        foundText = KNOWLEDGE_BASE.resume;
-        // Trigger CV open
-        window.open('#', '_blank');
+    try {
+      const res = await fetch('https://portfolio-chatbot-a7tv.onrender.com/chat', {
+        method: 'POST',
+        headers: {
+          'accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: userQuery,
+          chat_history: chatHistory,
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
       }
 
-      setResponse(foundText);
-      setIsTyping(false);
+      const data = await res.json();
+      const botResponse = data.response || "No response returned from the bot.";
+
+      setResponse(botResponse);
+      setChatHistory((prev) => [
+        ...prev,
+        { role: 'user', content: userQuery },
+        { role: 'model', content: botResponse },
+      ]);
 
       // Speech Synthesis TTS
       if (!audioMuted && 'speechSynthesis' in window) {
         window.speechSynthesis.cancel();
         // Remove formatting brackets from speech
-        const speechText = foundText.replace(/[\[\]]/g, '');
+        const speechText = botResponse.replace(/[\[\]]/g, '');
         const utterance = new SpeechSynthesisUtterance(speechText);
         utterance.pitch = 0.95;
         utterance.rate = 1.05;
         window.speechSynthesis.speak(utterance);
       }
-    }, 900);
+    } catch (error) {
+      console.error("Error communicating with chatbot API:", error);
+      setResponse("Communication offline. Failed to establish connection to the neural brain.");
+    } finally {
+      setIsTyping(false);
+    }
   };
 
   const startListening = () => {
