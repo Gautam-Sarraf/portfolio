@@ -205,7 +205,7 @@ const AiAssistant: React.FC<AiAssistantProps> = ({ audioMuted }) => {
       </div>
 
       {/* AI Speech log */}
-      <div className="bg-slate-950/80 border border-slate-900 p-3 rounded h-32 overflow-y-auto font-mono text-[10px] leading-relaxed text-cyan-200">
+      <div className="bg-slate-950/80 border border-slate-900 p-3 rounded flex-1 min-h-[100px] overflow-y-auto font-mono text-[10px] leading-relaxed text-cyan-200 whitespace-pre-wrap">
         <span className="text-pink-500 mr-1">&gt;&nbsp;</span>
         {response}
       </div>
