@@ -11,11 +11,11 @@ interface NavbarProps {
 }
 
 const navItems = [
-  { id: 'intro', label: 'SYSTEM ENGINE', index: '01' },
-  { id: 'skills', label: 'TECH GALAXY', index: '02' },
-  { id: 'missions', label: 'SHIPPED MISSIONS', index: '03' },
-  { id: 'timeline', label: 'WARP PATH', index: '04' },
-  { id: 'contact', label: 'COMMS LINK', index: '05' },
+  { id: 'intro', label: 'ABOUT', index: '01' },
+  { id: 'skills', label: 'SKILLS', index: '02' },
+  { id: 'missions', label: 'PROJECTS', index: '03' },
+  { id: 'timeline', label: 'EXPERIENCE', index: '04' },
+  { id: 'contact', label: 'CONTACT', index: '05' },
 ];
 
 const Navbar: React.FC<NavbarProps> = ({ mode, setMode, audioMuted, toggleAudio }) => {
@@ -67,7 +67,7 @@ const Navbar: React.FC<NavbarProps> = ({ mode, setMode, audioMuted, toggleAudio 
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <Cpu size={14} className="text-cyan-400 animate-pulse" />
           <span style={{ fontSize: 10, color: 'var(--text-muted)', letterSpacing: '1px' }}>
-            CORE:<span className="text-cyan-400 ml-1">G-AI.v4.0</span>
+            SYSTEM:<span className="text-cyan-400 ml-1">PORTFOLIO v4.0</span>
           </span>
         </div>
         <div style={{ width: 1, height: 12, background: 'rgba(255,255,255,0.1)' }} />
@@ -130,7 +130,7 @@ const Navbar: React.FC<NavbarProps> = ({ mode, setMode, audioMuted, toggleAudio 
       <div className="flex md:hidden items-center gap-2">
         <Compass className="text-cyan-400 animate-spin" style={{ animationDuration: '6s' }} size={16} />
         <span style={{ fontFamily: 'var(--font-display)', fontSize: 12, fontWeight: 900, color: 'var(--cyber-cyan)', letterSpacing: '2px' }}>
-          GAUTAM // LOBBY
+          GAUTAM // PORTFOLIO
         </span>
       </div>
 
@@ -162,7 +162,7 @@ const Navbar: React.FC<NavbarProps> = ({ mode, setMode, audioMuted, toggleAudio 
         >
           {audioMuted ? <VolumeX size={15} /> : <Volume2 size={15} />}
           <span className="hidden md:inline" style={{ letterSpacing: '1px' }}>
-            {audioMuted ? 'COMMS MUTED' : 'AUDIO ACTIVE'}
+            {audioMuted ? 'SOUND OFF' : 'SOUND ON'}
           </span>
         </button>
 
@@ -201,7 +201,7 @@ const Navbar: React.FC<NavbarProps> = ({ mode, setMode, audioMuted, toggleAudio 
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8, padding: '0 8px' }}>
             <ShieldAlert size={12} className="text-orange-400" />
             <span style={{ fontSize: 9, color: 'var(--cyber-orange)', letterSpacing: '1px' }}>
-              TACTICAL INTERFACE INITIALIZED
+              NAVIGATION MENU
             </span>
           </div>
           {navItems.map((item) => (

@@ -129,7 +129,7 @@ const Skills: React.FC<SkillsProps> = ({ selectedSkill, setSelectedSkill }) => {
               <div className="flex justify-between items-center border-b border-slate-900 pb-3">
                 <div>
                   <span className="font-bold text-[8px] bg-cyan-900/50 border border-cyan-500/40 text-cyan-400 px-2 py-0.5 rounded-sm tracking-wider mr-2 uppercase">
-                    SECTOR SELECTED
+                    SKILL DETAILS
                   </span>
                   <h2 className="text-xl font-bold text-cyan-400 font-display mt-1 tracking-wider uppercase">
                     {selectedSkill}
@@ -140,15 +140,15 @@ const Skills: React.FC<SkillsProps> = ({ selectedSkill, setSelectedSkill }) => {
                   className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 border border-slate-800 text-slate-400 hover:text-cyan-400 rounded transition-colors text-[9px] cursor-none"
                 >
                   <RefreshCw size={11} className="animate-spin" style={{ animationDuration: '4s' }} />
-                  RESET SYSTEM
+                  BACK TO SUMMARY
                 </button>
               </div>
 
               {/* Stats gauge */}
               <div className="flex flex-col gap-2 p-3 bg-slate-950/60 border border-slate-900/60 rounded">
                 <div className="flex justify-between">
-                  <span className="text-slate-500">INTELLIGENCE GAIN:</span>
-                  <span className="text-cyan-400 font-bold">{SKILL_DETAILS[selectedSkill].level}% COMPATIBLE</span>
+                  <span className="text-slate-500">PROFICIENCY:</span>
+                  <span className="text-cyan-400 font-bold">{SKILL_DETAILS[selectedSkill].level}% PROFICIENT</span>
                 </div>
                 <div className="h-2 bg-slate-900 rounded overflow-hidden">
                   <motion.div
@@ -162,22 +162,22 @@ const Skills: React.FC<SkillsProps> = ({ selectedSkill, setSelectedSkill }) => {
               {/* Data fields */}
               <div className="flex flex-col gap-3 leading-relaxed">
                 <div>
-                  <span className="text-slate-500 block mb-1">SYSTEM ROLE:</span>
+                  <span className="text-slate-500 block mb-1">ROLE / SCOPE:</span>
                   <span className="text-slate-200">{SKILL_DETAILS[selectedSkill].role.toUpperCase()}</span>
                 </div>
 
                 <div>
-                  <span className="text-slate-500 block mb-1">MODULE OVERVIEW:</span>
+                  <span className="text-slate-500 block mb-1">DESCRIPTION:</span>
                   <span className="text-slate-300">{SKILL_DETAILS[selectedSkill].desc}</span>
                 </div>
 
                 <div>
-                  <span className="text-slate-500 block mb-1">TACTICAL USE CASES:</span>
+                  <span className="text-slate-500 block mb-1">APPLICATIONS:</span>
                   <span className="text-slate-300">{SKILL_DETAILS[selectedSkill].useCase}</span>
                 </div>
 
                 <div>
-                  <span className="text-slate-500 block mb-1">INTEGRATED CODES:</span>
+                  <span className="text-slate-500 block mb-1">PROJECTS INTEGRATED:</span>
                   <div className="flex flex-wrap gap-1.5 mt-1">
                     {SKILL_DETAILS[selectedSkill].projects.map(proj => (
                       <span key={proj} className="px-2 py-0.5 bg-slate-900 border border-slate-800 text-cyan-300 text-[9px] rounded-sm">
@@ -197,10 +197,10 @@ const Skills: React.FC<SkillsProps> = ({ selectedSkill, setSelectedSkill }) => {
             >
               <div className="border-b border-slate-900 pb-2 flex items-center gap-2">
                 <Layers size={13} className="text-cyan-400" />
-                <span className="tracking-wider text-slate-400 uppercase">SYSTEM_PLANETS_DIAGNOSTICS</span>
+                <span className="tracking-wider text-slate-400 uppercase">TECHNICAL SKILLS DIAGNOSTIC</span>
               </div>
               <p className="text-[10px] text-slate-500 leading-relaxed">
-                The star chart maps Gautam's technical planetary clusters. Click any planet in the space sector or click buttons below to inspect system statistics.
+                This section maps Gautam's technical skills. Click any planet in the interactive 3D view or use the quick access buttons below to see details.
               </p>
 
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-2">
@@ -240,7 +240,7 @@ const Skills: React.FC<SkillsProps> = ({ selectedSkill, setSelectedSkill }) => {
       >
         <div className="font-mono text-[10px] tracking-wider text-slate-400 border-b border-slate-900 pb-2 flex items-center gap-2">
           <Award size={13} className="text-cyan-400" />
-          SYSTEM_CREDENTIALS
+          CERTIFICATIONS & CREDENTIALS
         </div>
 
         <div className="flex flex-col gap-3 font-mono text-[10px]">

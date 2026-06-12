@@ -4,10 +4,10 @@ import { Send, Terminal, Mail, Github, Linkedin, MapPin, Radio, ShieldAlert } fr
 import { spaceAudio } from '../utils/audio';
 
 const COMMS_INDEX = [
-  { icon: <Mail size={14} />, label: "EMAIL CHANNEL", value: "gautam.sarraf_cs22@gla.ac.in", href: "mailto:gautam.sarraf_cs22@gla.ac.in", color: "var(--cyber-cyan)" },
-  { icon: <Github size={14} />, label: "GITHUB COORDINATES", value: "github.com/gautam-sarraf", href: "https://github.com/gautam-sarraf", color: "var(--cyber-green)" },
-  { icon: <Linkedin size={14} />, label: "LINKEDIN DOCK", value: "linkedin.com/in/gautam-sarraf", href: "https://linkedin.com/in/gautam-sarraf", color: "var(--cyber-pink)" },
-  { icon: <MapPin size={14} />, label: "LOCAL SYSTEM", value: "Birgunj, Nepal", href: null, color: "var(--cyber-yellow)" },
+  { icon: <Mail size={14} />, label: "EMAIL", value: "gautam.sarraf_cs22@gla.ac.in", href: "mailto:gautam.sarraf_cs22@gla.ac.in", color: "var(--cyber-cyan)" },
+  { icon: <Github size={14} />, label: "GITHUB", value: "github.com/gautam-sarraf", href: "https://github.com/gautam-sarraf", color: "var(--cyber-green)" },
+  { icon: <Linkedin size={14} />, label: "LINKEDIN", value: "linkedin.com/in/gautam-sarraf", href: "https://linkedin.com/in/gautam-sarraf", color: "var(--cyber-pink)" },
+  { icon: <MapPin size={14} />, label: "LOCATION", value: "Birgunj, Nepal", href: null, color: "var(--cyber-yellow)" },
 ];
 
 const Contact: React.FC = () => {
@@ -36,11 +36,11 @@ const Contact: React.FC = () => {
     spaceAudio.playTransmission();
 
     // Trigger sequencing logs
-    await addLog("INITIALIZING SIGNAL PROTOCOL OVER WIDE RANGE ARRAY...", 100);
-    await addLog("ENCRYPTING PAYLOAD OVER PROTOCOL LAYER 4...", 300);
-    await addLog(`PACKAGING TRANSMITTER ID: ${formData.name.toUpperCase()} <${formData.email.toLowerCase()}>...`, 400);
-    await addLog("ALIGNING SAT-DOCK ANTENNA TO GAUTAM-CORE COORDINATES...", 300);
-    await addLog("DISPATCHING FREQUENCY PACKETS...", 400);
+    await addLog("INITIALIZING TRANSMISSION PROTOCOL...", 100);
+    await addLog("ENCRYPTING MESSAGE PAYLOAD...", 300);
+    await addLog(`PACKAGING SENDER DATA: ${formData.name.toUpperCase()}...`, 400);
+    await addLog("ROUTING CONNECTION TO HOST...", 300);
+    await addLog("SENDING MESSAGE PACKETS...", 400);
 
     const fd = new FormData();
     fd.append('access_key', '86f2f3a0-cdc8-438d-b6d4-634e52b87631');
@@ -53,16 +53,16 @@ const Contact: React.FC = () => {
       if (data.success) {
         setStatus('success');
         spaceAudio.playBoot(); // Play success chime
-        await addLog("SIGNAL SUCCESS. GAUTAM-CORE CONFIRMED DOCKING RECEIPT.", 200);
-        await addLog("TERMINATING UPLINK PROTOCOL.", 100);
+        await addLog("TRANSMISSION SUCCESS. MESSAGE CONFIRMED.", 200);
+        await addLog("CONNECTION CLOSED.", 100);
         setFormData({ name: '', email: '', subject: '', message: '' });
       } else {
         setStatus('error');
-        await addLog("TRANSMISSION ERROR. ROUTE BLOCKED BY FIREWALL.", 200);
+        await addLog("TRANSMISSION ERROR. SENT BLOCKED.", 200);
       }
     } catch {
       setStatus('error');
-      await addLog("TRANSMISSION FAILED. NETWORK ROUTE OFFLINE.", 200);
+      await addLog("TRANSMISSION FAILED. NETWORK OFFLINE.", 200);
     }
   };
 
@@ -90,7 +90,7 @@ const Contact: React.FC = () => {
         >
           <div className="font-mono text-[10px] tracking-wider text-slate-400 border-b border-slate-900 pb-2 mb-1 flex items-center gap-2">
             <Radio size={12} className="text-cyan-400 animate-pulse" />
-            COMMUNICATION_COORDINATES
+            CONTACT CHANNELS
           </div>
           {COMMS_INDEX.map((c, idx) => (
             <div
@@ -134,11 +134,11 @@ const Contact: React.FC = () => {
         >
           <div className="font-mono text-[10px] tracking-wider text-slate-400 border-b border-slate-900 pb-2 mb-1 flex items-center gap-2">
             <Terminal size={12} className="text-cyan-400" />
-            UPLINK_CONSOLE.LOG
+            TRANSMISSION CONSOLE
           </div>
           <div className="flex-1 overflow-y-auto font-mono text-[9px] text-slate-400 flex flex-col gap-1.5 leading-relaxed">
             {transmissionLogs.length === 0 ? (
-              <span className="text-slate-600 italic">No signals transmitted. Awaiting payload entry...</span>
+              <span className="text-slate-600 italic">Awaiting message submission... console idle.</span>
             ) : (
               transmissionLogs.map((log, idx) => (
                 <div key={idx} className="flex gap-2">
@@ -160,20 +160,20 @@ const Contact: React.FC = () => {
       >
         <div className="font-mono text-[10px] tracking-wider text-slate-400 border-b border-slate-900 pb-3 mb-4 flex items-center gap-2">
           <ShieldAlert size={12} className="text-cyan-400 animate-pulse" />
-          SIGNAL_COMPILER_MODULE
+          MESSAGE SENDER
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4 font-mono text-[10px]">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
-              <label className="text-cyan-400 tracking-widest font-bold">NAME IDENTIFICATION</label>
+              <label className="text-cyan-400 tracking-widest font-bold">YOUR NAME</label>
               <input
                 type="text"
                 name="name"
                 value={formData.name}
                 onChange={handleInputChange}
                 required
-                placeholder="Enter client handle"
+                placeholder="Enter your name"
                 style={{
                   width: '100%',
                   padding: '10px 12px',
@@ -188,14 +188,14 @@ const Contact: React.FC = () => {
               />
             </div>
             <div className="flex flex-col gap-1.5">
-              <label className="text-cyan-400 tracking-widest font-bold">RETURN TARGET (EMAIL)</label>
+              <label className="text-cyan-400 tracking-widest font-bold">YOUR EMAIL</label>
               <input
                 type="email"
                 name="email"
                 value={formData.email}
                 onChange={handleInputChange}
                 required
-                placeholder="client@network.com"
+                placeholder="your.email@example.com"
                 style={{
                   width: '100%',
                   padding: '10px 12px',
@@ -212,14 +212,14 @@ const Contact: React.FC = () => {
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label className="text-cyan-400 tracking-widest font-bold">TRANSMISSION SUBJECT</label>
+            <label className="text-cyan-400 tracking-widest font-bold">SUBJECT</label>
             <input
               type="text"
               name="subject"
               value={formData.subject}
               onChange={handleInputChange}
               required
-              placeholder="Select signal header"
+              placeholder="Subject of your message"
               style={{
                 width: '100%',
                 padding: '10px 12px',
@@ -235,13 +235,13 @@ const Contact: React.FC = () => {
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label className="text-cyan-400 tracking-widest font-bold">PAYLOAD CONTENT (MESSAGE)</label>
+            <label className="text-cyan-400 tracking-widest font-bold">MESSAGE</label>
             <textarea
               name="message"
               value={formData.message}
               onChange={handleInputChange}
               required
-              placeholder="Draft data blocks for transmission..."
+              placeholder="Type your message here..."
               rows={4}
               style={{
                 width: '100%',
@@ -285,15 +285,15 @@ const Contact: React.FC = () => {
             {status === 'sending' ? (
               <>
                 <div className="w-3.5 h-3.5 border-2 border-black border-t-transparent rounded-full animate-spin" />
-                DOCKING SIGNAL...
+                SENDING MESSAGE...
               </>
             ) : status === 'success' ? (
-              "SIGNAL SECURED ✓"
+              "MESSAGE SENT ✓"
             ) : status === 'error' ? (
-              "ERROR RESUBMIT SIGNAL ✗"
+              "ERROR - RETRY ✗"
             ) : (
               <>
-                <Send size={12} /> DISPATCH TRANSMISSION
+                <Send size={12} /> SEND MESSAGE
               </>
             )}
           </button>

@@ -20,12 +20,12 @@ const KNOWLEDGE_BASE: Record<string, string> = {
   ai: "Gautam has shipped advanced AI systems including: [Resume Analyzer] (ATS score optimization tool using GPT nodes), [PDF Chatbot] (RAG architecture with vector databases), and [CP-KYC] (AI-driven document scraping agents).",
   backend: "In backend engineering, Gautam has architected: [OT Scheduler] (shift scheduling logic), [TeamSphere] (WebSocket + WebRTC real-time chat), and enterprise REST APIs using Node.js, FastAPI, MongoDB, and PostgreSQL.",
   tech: "Gautam's technological arsenal includes React, Next.js, TypeScript, Tailwind, Python, FastAPI, Node.js, Express, MongoDB, PostgreSQL, Vector Databases (FAISS, Chroma), OpenAI, LangChain, and Docker.",
-  resume: "Gautam's professional resume is ready for immediate extraction. Code-base download activated. [Extraction File: gautam_resume.pdf]. Accessing Deep Space files...",
+  resume: "You can download Gautam's professional resume here: [gautam_resume.pdf]",
 };
 
 const AiAssistant: React.FC<AiAssistantProps> = ({ audioMuted }) => {
   const [query, setQuery] = useState('');
-  const [response, setResponse] = useState('Assistant online. Core interface fully synced. Awaiting instructions, Commander.');
+  const [response, setResponse] = useState('AI assistant online. Ready to answer questions about Gautam\'s skills, experience, or projects.');
   const [isTyping, setIsTyping] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -42,7 +42,7 @@ const AiAssistant: React.FC<AiAssistantProps> = ({ audioMuted }) => {
 
       rec.onstart = () => {
         setIsListening(true);
-        setResponse('Listening to transmission channel...');
+        setResponse('Listening...');
       };
 
       rec.onresult = (e: any) => {
@@ -53,7 +53,7 @@ const AiAssistant: React.FC<AiAssistantProps> = ({ audioMuted }) => {
 
       rec.onerror = () => {
         setIsListening(false);
-        setResponse('Transmission failed. Signal interference detected. Please type query.');
+        setResponse('Speech recognition failed. Please type your query.');
       };
 
       rec.onend = () => {
@@ -116,11 +116,11 @@ const AiAssistant: React.FC<AiAssistantProps> = ({ audioMuted }) => {
     if (!userQuery.trim()) return;
     spaceAudio.playClick();
     setIsTyping(true);
-    setResponse('Searching core neural index...');
+    setResponse('Searching database...');
     
     setTimeout(() => {
       const cleanQ = userQuery.toLowerCase();
-      let foundText = "Signal routing unmapped. Gautams database specifies: Try prompt cards below or ask about 'AI projects', 'experience' or 'skills'.";
+      let foundText = "Query not recognized. Please use the quick prompts below or ask about Gautam's skills, projects, or experience.";
 
       if (cleanQ.includes('who') || cleanQ.includes('gautam')) {
         foundText = KNOWLEDGE_BASE.gautam;
@@ -176,7 +176,7 @@ const AiAssistant: React.FC<AiAssistantProps> = ({ audioMuted }) => {
       <div className="flex items-center justify-between border-b border-slate-800 pb-2">
         <div className="flex items-center gap-2">
           <Power size={11} className="text-cyan-400 animate-pulse" />
-          <span className="font-mono text-[10px] tracking-wider text-slate-400">JARVIS_COGNITIVE.LOG</span>
+          <span className="font-mono text-[10px] tracking-wider text-slate-400">AI ASSISTANT</span>
         </div>
         <div className="flex items-center gap-1">
           <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-ping" />
@@ -243,7 +243,7 @@ const AiAssistant: React.FC<AiAssistantProps> = ({ audioMuted }) => {
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Ask AI Core..."
+          placeholder="Ask about Gautam..."
           className="flex-1 px-3 py-2 bg-slate-950 border border-slate-800 rounded font-mono text-[10px] text-slate-200 focus:outline-none focus:border-cyan-500 transition-all placeholder-slate-600"
         />
         <button

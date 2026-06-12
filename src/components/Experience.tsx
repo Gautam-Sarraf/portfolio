@@ -14,7 +14,7 @@ const EXPERIENCE_REPORTS = [
     role: "B.Tech Student (Computer Science)",
     company: "GLA University, Mathura",
     period: "2022 – May 2026 (Expected)",
-    status: "SECTOR ONGOING",
+    status: "ONGOING",
     color: "var(--cyber-yellow)",
     desc: "Acquiring fundamental systems engineering blocks, data structures, and web technologies.",
     logs: [
@@ -28,7 +28,7 @@ const EXPERIENCE_REPORTS = [
     role: "Operation In-Charge",
     company: "Previous Organization (Operational Management)",
     period: "2023 – 2024",
-    status: "SECTOR DE-COMMISSIONED",
+    status: "COMPLETED",
     color: "var(--cyber-orange)",
     desc: "Managed daily workflows, operations checkpoints, and built custom scripts to automate report sheets.",
     logs: [
@@ -42,7 +42,7 @@ const EXPERIENCE_REPORTS = [
     role: "Full Stack Web Dev Intern",
     company: "Jovac's JVAC Technologies",
     period: "Jun 2024 – Jul 2024",
-    status: "MISSION SUCCESSFUL",
+    status: "COMPLETED",
     color: "var(--cyber-green)",
     desc: "Collaborated in client sprint cycles, built responsive web panels, and engaged in QA testing routines.",
     logs: [
@@ -56,7 +56,7 @@ const EXPERIENCE_REPORTS = [
     role: "Independent AI Developer",
     company: "Freelance & Open Source AI",
     period: "2024 – Present",
-    status: "MISSION ACTIVE",
+    status: "ACTIVE",
     color: "var(--cyber-pink)",
     desc: "Developing and deploying AI orchestration agents, RAG engines, and compliance tools.",
     logs: [
@@ -70,7 +70,7 @@ const EXPERIENCE_REPORTS = [
     role: "Frontend Developer",
     company: "Current Enterprise Role",
     period: "2025 – Present",
-    status: "MISSION ACTIVE",
+    status: "ACTIVE",
     color: "var(--cyber-cyan)",
     desc: "Leading frontend module development, optimizing assets, and implementing interactive client panels.",
     logs: [
@@ -111,7 +111,7 @@ const Experience: React.FC<ExperienceProps> = ({ selectedIndex, setSelectedIndex
       >
         <div className="font-mono text-[10px] tracking-wider text-slate-400 border-b border-slate-900 pb-2 mb-2 flex items-center gap-2">
           <Terminal size={12} className="text-cyan-400" />
-          WARP_STATION_INDEX
+          WORK HISTORY
         </div>
 
         {TIMELINE_STATIONS.map((station, idx) => {
@@ -173,7 +173,7 @@ const Experience: React.FC<ExperienceProps> = ({ selectedIndex, setSelectedIndex
                   >
                     {activeReport.status}
                   </span>
-                  <span className="text-slate-500 text-[9px]">SECTOR_COORD: Z({TIMELINE_STATIONS[selectedIndex].z}ly)</span>
+                  <span className="text-slate-500 text-[9px]">TIMELINE COORDINATE: Z-{selectedIndex}</span>
                 </div>
                 <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 900, color: 'var(--cyber-cyan)' }}>
                   {activeReport.role}
@@ -197,7 +197,7 @@ const Experience: React.FC<ExperienceProps> = ({ selectedIndex, setSelectedIndex
             {/* Log achievements */}
             <div className="flex flex-col gap-2">
               <span className="text-slate-500 font-bold tracking-wider uppercase border-b border-slate-900 pb-1 mb-1">
-                SYSTEM_LOG_ACHIEVEMENTS
+                KEY ACHIEVEMENTS & CONTRIBUTIONS
               </span>
               <ul className="flex flex-col gap-3">
                 {activeReport.logs.map((log, idx) => (
@@ -212,7 +212,7 @@ const Experience: React.FC<ExperienceProps> = ({ selectedIndex, setSelectedIndex
             {/* Configured tech stack */}
             <div className="border-t border-slate-900 pt-4 flex flex-wrap gap-2 items-center">
               <Zap size={13} className="text-slate-500" />
-              <span className="text-slate-500 text-[9px] tracking-widest uppercase mr-2">EQUIPPED MODULES:</span>
+              <span className="text-slate-500 text-[9px] tracking-widest uppercase mr-2">TECHNOLOGIES USED:</span>
               {activeReport.tech.map((t) => (
                 <span
                   key={t}

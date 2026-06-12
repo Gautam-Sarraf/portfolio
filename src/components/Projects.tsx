@@ -230,7 +230,7 @@ const BlueprintVisualizer: React.FC<{ nodes: string[] }> = ({ nodes }) => {
     <div className="bg-slate-950/80 border border-slate-900 rounded p-4 relative h-40 overflow-hidden">
       <div className="absolute top-2 left-3 font-mono text-[9px] text-slate-500 tracking-wider flex items-center gap-2">
         <Network size={11} className="text-cyan-400" />
-        TACTICAL_ARCHITECTURE_FLOWSHEET
+        PROJECT ARCHITECTURE BLUEPRINT
       </div>
       <canvas
         ref={canvasRef}
@@ -271,7 +271,7 @@ const Projects: React.FC = () => {
       >
         <div className="font-mono text-[10px] tracking-wider text-slate-400 border-b border-slate-900 pb-2 mb-2 flex items-center gap-2">
           <Shield size={12} className="text-cyan-400" />
-          AVAILABLE_MISSIONS
+          PROJECT INDEX
         </div>
         
         {MISSIONS.map((m, idx) => {
@@ -315,7 +315,7 @@ const Projects: React.FC = () => {
           <div>
             <div className="flex items-center gap-2 mb-1">
               <span className="px-2 py-0.5 bg-cyan-900/50 border border-cyan-500/40 text-cyan-400 font-mono text-[8px] tracking-widest rounded-sm">
-                MISSION ACTIVE
+                PROJECT ACTIVE
               </span>
               <span className="text-slate-600 font-mono text-[9px]">FILE://{activeMission.id}.obj</span>
             </div>
@@ -345,7 +345,7 @@ const Projects: React.FC = () => {
                 onMouseEnter={() => spaceAudio.playHover()}
                 className="p-2 bg-cyan-500 hover:bg-cyan-400 text-slate-950 rounded transition-colors cursor-none flex items-center gap-1.5 font-mono text-[9px] font-bold"
               >
-                <ExternalLink size={11} /> LAUNCH
+                <ExternalLink size={11} /> LIVE DEMO
               </a>
             )}
           </div>
@@ -358,28 +358,28 @@ const Projects: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 font-mono text-[10px] leading-relaxed">
           <div className="border border-slate-900/60 p-4 bg-slate-950/40 rounded flex flex-col gap-2">
             <span className="text-pink-500 tracking-wider border-b border-slate-900 pb-1 mb-1 font-bold">
-              [PROBLEM DEFINITION]
+              [THE PROBLEM]
             </span>
             <span className="text-slate-300">{activeMission.problem}</span>
           </div>
 
           <div className="border border-slate-900/60 p-4 bg-slate-950/40 rounded flex flex-col gap-2">
             <span className="text-cyan-400 tracking-wider border-b border-slate-900 pb-1 mb-1 font-bold">
-              [INTELLIGENT ARCHITECTURE]
+              [THE ARCHITECTURE]
             </span>
             <span className="text-slate-300">{activeMission.architecture}</span>
           </div>
 
           <div className="border border-slate-900/60 p-4 bg-slate-950/40 rounded flex flex-col gap-2">
             <span className="text-orange-400 tracking-wider border-b border-slate-900 pb-1 mb-1 font-bold">
-              [CRITICAL CHALLENGES]
+              [TECHNICAL CHALLENGES]
             </span>
             <span className="text-slate-300">{activeMission.challenges}</span>
           </div>
 
           <div className="border border-slate-900/60 p-4 bg-slate-950/40 rounded flex flex-col gap-2">
             <span className="text-green-400 tracking-wider border-b border-slate-900 pb-1 mb-1 font-bold">
-              [MISSION IMPACT / METRICS]
+              [RESULTS & IMPACT]
             </span>
             <span className="text-slate-300 flex items-start gap-2">
               <CheckCircle size={12} className="text-green-400 mt-0.5 flex-shrink-0" />
@@ -391,7 +391,7 @@ const Projects: React.FC = () => {
         {/* Tech Stack inventory tags */}
         <div className="border-t border-slate-900 pt-4 flex flex-wrap gap-2 items-center">
           <FileCode size={13} className="text-slate-500" />
-          <span className="font-mono text-[9px] text-slate-500 tracking-widest uppercase mr-2">EQUIPPED MODULES:</span>
+          <span className="font-mono text-[9px] text-slate-500 tracking-widest uppercase mr-2">TECH STACK:</span>
           {activeMission.tech.map((t) => (
             <span
               key={t}

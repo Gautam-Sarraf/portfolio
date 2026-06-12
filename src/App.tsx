@@ -33,12 +33,12 @@ const SystemMonitorHUD: React.FC = () => {
     >
       <div className="border-b border-slate-900 pb-2 text-slate-400 tracking-wider flex items-center gap-2">
         <Cpu size={12} className="text-cyan-400 animate-spin" style={{ animationDuration: '8s' }} />
-        TACTICAL_HARDWARE_HUD
+        SYSTEM PERFORMANCE MONITOR
       </div>
 
       <div className="flex flex-col gap-2">
         <div className="flex justify-between items-center">
-          <span className="text-slate-500">AI CORE LOAD (CPU):</span>
+          <span className="text-slate-500">CPU LOAD:</span>
           <span className="text-cyan-400 font-bold">{cpu}%</span>
         </div>
         <div className="h-1 bg-slate-900 rounded overflow-hidden">
@@ -46,7 +46,7 @@ const SystemMonitorHUD: React.FC = () => {
         </div>
 
         <div className="flex justify-between items-center mt-1">
-          <span className="text-slate-500">WARP ENGINE (GPU):</span>
+          <span className="text-slate-500">GPU TEMP:</span>
           <span className="text-green-400 font-bold">{gpu}°C</span>
         </div>
         <div className="h-1 bg-slate-900 rounded overflow-hidden">
@@ -54,7 +54,7 @@ const SystemMonitorHUD: React.FC = () => {
         </div>
 
         <div className="flex justify-between items-center mt-1">
-          <span className="text-slate-500">MEMORY VECTOR DEPTH:</span>
+          <span className="text-slate-500">RAM LOAD:</span>
           <span className="text-pink-400 font-bold">{mem}GB / 32GB</span>
         </div>
         <div className="h-1 bg-slate-900 rounded overflow-hidden">
@@ -64,15 +64,15 @@ const SystemMonitorHUD: React.FC = () => {
 
       <div className="border-t border-slate-900 pt-2 flex flex-col gap-1.5 text-slate-500 text-[8px]">
         <div className="flex justify-between">
-          <span>COGNITIVE THREADS:</span>
+          <span>ACTIVE THREADS:</span>
           <span className="text-cyan-400">12 ACTIVE</span>
         </div>
         <div className="flex justify-between">
-          <span>DOCK SHIELD CAP:</span>
-          <span className="text-cyan-400">100% OK</span>
+          <span>SECURITY AUDIT:</span>
+          <span className="text-cyan-400">100% PASS</span>
         </div>
         <div className="flex justify-between">
-          <span>ATMOSPHERE PURGE:</span>
+          <span>SYSTEM INTEGRITY:</span>
           <span className="text-cyan-400">STABLE</span>
         </div>
       </div>
@@ -88,22 +88,22 @@ const QuickSystemIndex: React.FC = () => {
     >
       <div className="border-b border-slate-900 pb-2 text-slate-400 tracking-wider flex items-center gap-2">
         <Database size={12} className="text-cyan-400" />
-        CENTRAL_DATABASE_CORES
+        PORTFOLIO INDEX CORES
       </div>
 
       <div className="flex flex-col gap-2.5 text-slate-400 text-[9px] leading-relaxed">
         <div className="flex gap-2 items-start">
           <ShieldCheck size={12} className="text-cyan-400 mt-0.5 flex-shrink-0" />
           <div>
-            <span className="font-bold text-slate-300">RAG ARCHITECTURES</span>
-            <p className="text-[8px] text-slate-500">Semantic contextual vector routing indices parsed and tested.</p>
+            <span className="font-bold text-slate-300">AI & RAG ARCHITECTURES</span>
+            <p className="text-[8px] text-slate-500">Vector store setups and semantic text search integrations.</p>
           </div>
         </div>
         <div className="flex gap-2 items-start">
           <HardDrive size={12} className="text-green-400 mt-0.5 flex-shrink-0" />
           <div>
-            <span className="font-bold text-slate-300">AUTOMATION DRIVES</span>
-            <p className="text-[8px] text-slate-500">Multi-stage corporate KYC scraping and schedule solvers.</p>
+            <span className="font-bold text-slate-300">AUTOMATION SYSTEMS</span>
+            <p className="text-[8px] text-slate-500">Headless scraping agents and shift scheduling solvers.</p>
           </div>
         </div>
       </div>

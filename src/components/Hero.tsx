@@ -9,13 +9,13 @@ interface HeroProps {
 }
 
 const BOOT_LOGS = [
-  { text: "INITIALIZING NEURAL INTERFACE...", delay: 0 },
-  { text: "CHECKING COGNITIVE MEMORY SECTOR... 32TB MEMORY [OK]", delay: 500 },
-  { text: "CONNECTING TO DEEP SPACE NETWORK...", delay: 1100 },
-  { text: "SIGNAL STRENGTH: 98.4dBm [STABLE]", delay: 1600 },
-  { text: "LOADING GAUTAM SARRAF AI SYSTEMS...", delay: 2100 },
-  { text: "SYSTEM RESTORE CORES: 8 ACTIVE CORES MOUNTED", delay: 2600 },
-  { text: "RUNNING POWER SURGE SHIELD CONTROLLER...", delay: 3100 },
+  { text: "INITIALIZING PORTFOLIO SYSTEM...", delay: 0 },
+  { text: "LOADING SITE COMPONENT ASSETS... [OK]", delay: 500 },
+  { text: "ESTABLISHING CORE ROUTING...", delay: 1100 },
+  { text: "CONNECTION STABILITY [STABLE]", delay: 1600 },
+  { text: "LOADING GAUTAM SARRAF DATA...", delay: 2100 },
+  { text: "MOUNTING PORTFOLIO CORES... [OK]", delay: 2600 },
+  { text: "BOOTING SEQUENCE COMPLETE...", delay: 3100 },
 ];
 
 const ROLES = [
@@ -121,7 +121,7 @@ const Hero: React.FC<HeroProps> = ({ onBootComplete, audioMuted }) => {
               <span className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
               <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
               <span className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
-              <span className="text-[10px] text-slate-500 ml-2">NeuralBoot // GautamOS.sys</span>
+              <span className="text-[10px] text-slate-500 ml-2">SystemBoot // GautamOS.sys</span>
             </div>
 
             {/* Boot log list */}
@@ -159,7 +159,7 @@ const Hero: React.FC<HeroProps> = ({ onBootComplete, audioMuted }) => {
             }}
           >
             <div className="font-mono text-black text-xl font-bold tracking-widest animate-ping">
-              SYSTEM POWER CRITICAL
+              INITIALIZING GRAPHICS...
             </div>
           </motion.div>
         )}
@@ -197,7 +197,7 @@ const Hero: React.FC<HeroProps> = ({ onBootComplete, audioMuted }) => {
                 }}
               >
                 <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-ping" />
-                DOCKING INTERFACE READY
+                WELCOME TO MY PORTFOLIO
               </div>
             </div>
 
@@ -244,21 +244,21 @@ const Hero: React.FC<HeroProps> = ({ onBootComplete, audioMuted }) => {
                 margin: '0 auto 36px',
               }}
             >
-              Building Intelligent Systems For The Next Civilization. Specializing in autonomous AI agent meshes, semantic RAG systems, and robust full stack engineering.
+              Building modern web applications and intelligent systems. Specializing in AI-driven solutions, robust backends, and full stack engineering.
             </p>
 
             {/* Systems Metrics Overlay */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 border border-slate-800/40 rounded bg-slate-950/20 mb-8 max-w-lg mx-auto font-mono text-[9px] text-slate-500">
               <div className="flex flex-col gap-1 border-r border-slate-900">
-                <span>SECTOR LOG:</span>
+                <span>LOCATION:</span>
                 <span className="text-cyan-400">BIRGUNJ, NEPAL</span>
               </div>
               <div className="flex flex-col gap-1 md:border-r border-slate-900">
-                <span>COGNITIVE DB:</span>
-                <span className="text-green-400">FAISS / CHROMA</span>
+                <span>DATABASES:</span>
+                <span className="text-green-400">POSTGRES / MONGO</span>
               </div>
               <div className="flex flex-col gap-1 border-r border-slate-900">
-                <span>LLM SCHEMAS:</span>
+                <span>AI STACK:</span>
                 <span className="text-pink-400">GPT-4 / LANGCHAIN</span>
               </div>
               <div className="flex flex-col gap-1">
@@ -277,7 +277,7 @@ const Hero: React.FC<HeroProps> = ({ onBootComplete, audioMuted }) => {
                 onClick={() => spaceAudio.playClick()}
                 className="flex items-center gap-2 px-6 py-3 border border-cyan-500/30 text-cyan-400 hover:text-slate-950 hover:bg-cyan-500 transition-all font-mono text-xs font-bold rounded cursor-none"
               >
-                <Github size={14} /> GITHUB CORES
+                <Github size={14} /> GITHUB
               </a>
               <a
                 href="https://linkedin.com/in/gautam-sarraf"
@@ -295,7 +295,7 @@ const Hero: React.FC<HeroProps> = ({ onBootComplete, audioMuted }) => {
                 onClick={(e) => { e.preventDefault(); spaceAudio.playClick(); }}
                 className="flex items-center gap-2 px-6 py-3 bg-cyan-500 text-slate-950 hover:bg-cyan-400 transition-all font-mono text-xs font-bold rounded cursor-none hover:shadow-[0_0_15px_rgba(var(--cyber-cyan-rgb),0.4)]"
               >
-                <Download size={14} /> EXTRACT RESUME
+                <Download size={14} /> DOWNLOAD RESUME
               </a>
             </div>
           </motion.div>
