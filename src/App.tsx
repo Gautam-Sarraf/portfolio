@@ -8,6 +8,7 @@ import Projects from './components/Projects';
 import Experience from './components/Experience';
 import Contact from './components/Contact';
 import AiAssistant from './components/AiAssistant';
+import AmongUsFollower from './components/AmongUsFollower';
 import { spaceAudio } from './utils/audio';
 import { Cpu, ShieldCheck, Database, HardDrive } from 'lucide-react';
 
@@ -127,6 +128,7 @@ function App() {
 
   return (
     <div className="crt-screen relative w-screen h-screen overflow-hidden bg-black text-slate-200 select-none">
+      <AmongUsFollower />
       {/* 3D WebGL Space Canvas backdrop */}
       <SpaceCanvas
         mode={mode}

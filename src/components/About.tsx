@@ -9,7 +9,7 @@ const TERMINAL_STEPS = [
       '> Gautam Sarraf',
       '> Full Stack Developer | AI Engineer | Backend Architect',
       '> Location: Birgunj, Nepal  |  University: GLA University, Mathura',
-      '> Status: Actively building world-class software',
+      '> Status: Actively building software solutions',
     ],
     color: 'var(--cyber-green)',
   },

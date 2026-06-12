@@ -16,7 +16,7 @@ const QUICK_PROMPTS = [
 ];
 
 const KNOWLEDGE_BASE: Record<string, string> = {
-  gautam: "Gautam Sarraf is a world-class AI Engineer and Full Stack Developer. Specializing in RAG pipelines, AI Agents, scheduling engines, and high-performance Web systems, Gautam bridges the gap between deep learning APIs and production-ready applications.",
+  gautam: "Gautam Sarraf is a dedicated AI Engineer and Full Stack Developer. Specializing in RAG pipelines, AI Agents, scheduling engines, and high-performance Web systems, Gautam bridges the gap between deep learning APIs and production-ready applications.",
   ai: "Gautam has shipped advanced AI systems including: [Resume Analyzer] (ATS score optimization tool using GPT nodes), [PDF Chatbot] (RAG architecture with vector databases), and [CP-KYC] (AI-driven document scraping agents).",
   backend: "In backend engineering, Gautam has architected: [OT Scheduler] (shift scheduling logic), [TeamSphere] (WebSocket + WebRTC real-time chat), and enterprise REST APIs using Node.js, FastAPI, MongoDB, and PostgreSQL.",
   tech: "Gautam's technological arsenal includes React, Next.js, TypeScript, Tailwind, Python, FastAPI, Node.js, Express, MongoDB, PostgreSQL, Vector Databases (FAISS, Chroma), OpenAI, LangChain, and Docker.",
