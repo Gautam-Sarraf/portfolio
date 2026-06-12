@@ -118,7 +118,7 @@ function App() {
 
   // States linking Skill planet zooms and Timeline stations
   const [selectedSkill, setSelectedSkill] = useState<string | null>(null);
-  const [selectedTimelineIndex, setSelectedTimelineIndex] = useState(4); // Default to current role
+  const [selectedTimelineIndex, setSelectedTimelineIndex] = useState(2); // Default to current role
 
   // Force sound system to sync on user bootup
   const handleBootComplete = () => {

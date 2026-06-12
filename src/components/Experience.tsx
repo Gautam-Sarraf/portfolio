@@ -25,61 +25,37 @@ const EXPERIENCE_REPORTS = [
     tech: ["C/C++", "Python", "DSA", "Web Fundamentals", "SQL"]
   },
   {
-    role: "Operation In-Charge",
-    company: "Previous Organization (Operational Management)",
-    period: "2023 – 2024",
-    status: "COMPLETED",
-    color: "var(--cyber-orange)",
-    desc: "Managed daily workflows, operations checkpoints, and built custom scripts to automate report sheets.",
-    logs: [
-      "Led operations crew of 5, boosting general task execution speed by 25%",
-      "Wrote customized Python scripts to parse daily CSV sheets, eliminating manual inputs",
-      "Implemented a new digital tracking registry reducing reporting errors by 60%"
-    ],
-    tech: ["Python", "Excel Automation", "Operations Management", "Scripting"]
-  },
-  {
-    role: "Full Stack Web Dev Intern",
-    company: "Jovac's JVAC Technologies",
-    period: "Jun 2024 – Jul 2024",
+    role: "Full Stack Development Training",
+    company: "JOVAC (GLA University)",
+    period: "June 2024 – July 2024",
     status: "COMPLETED",
     color: "var(--cyber-green)",
-    desc: "Collaborated in client sprint cycles, built responsive web panels, and engaged in QA testing routines.",
+    desc: "Collaborating in structured training environments, building full stack web modules, and learning version control frameworks.",
     logs: [
-      "Developed and optimized 4+ web interfaces using vanilla JS, HTML/CSS and Node.js",
-      "Reduced client-reported dashboard bugs by 30% during QA review loops",
-      "Collaborated in a development team of 8 to launch client responsive views"
+      "Developed multiple full-stack applications using JavaScript, HTML/CSS, and Node.js.",
+      "Implemented backend APIs and integrated them with frontend interfaces for dynamic applications.",
+      "Worked on debugging and testing, improving application stability and reducing runtime errors.",
+      "Collaborated in team-based development environment, following structured coding practices.",
+      "Gained hands-on experience with version control systems like Git and GitHub."
     ],
-    tech: ["JavaScript", "Node.js", "Express.js", "MongoDB", "HTML/CSS"]
+    tech: ["JavaScript", "Node.js", "Express.js", "HTML/CSS", "Git", "GitHub"]
   },
   {
-    role: "Independent AI Developer",
-    company: "Freelance & Open Source AI",
-    period: "2024 – Present",
-    status: "ACTIVE",
-    color: "var(--cyber-pink)",
-    desc: "Developing and deploying AI orchestration agents, RAG engines, and compliance tools.",
-    logs: [
-      "Architected CP-KYC platform automating registry lookups via headless web scraping bots",
-      "Built RAG PDF Chatbot featuring FAISS vector memory chunks and context retrieval algorithms",
-      "Programmed ATS resume scanning scripts using OpenAI GPT completion models"
-    ],
-    tech: ["Python", "FastAPI", "OpenAI API", "LangChain", "Vector DBs", "RAG"]
-  },
-  {
-    role: "Frontend Developer",
-    company: "Current Enterprise Role",
-    period: "2025 – Present",
+    role: "Web Developer Intern",
+    company: "Webninjaz Technologies",
+    period: "Sep 2025 – Present",
     status: "ACTIVE",
     color: "var(--cyber-cyan)",
-    desc: "Leading frontend module development, optimizing assets, and implementing interactive client panels.",
+    desc: "Developing and optimizing web panels, integrating dynamic REST APIs, and creating AI automation pipelines.",
     logs: [
-      "Architected dashboard layout pulling data from 15+ REST endpoints with real-time updates",
-      "Decreased production bundle payloads by 40% through code splitting and router lazy loading",
-      "Built a reusable component directory adopted by 3 separate engineering crews",
-      "Implemented JWT authentication flows integrated with role-based dashboard filters"
+      "Developed responsive UI components using React and Next, improving cross-device usability and user experience.",
+      "Integrated REST APIs to enable dynamic frontend functionality and seamless data flow.",
+      "Built Python-based automation scripts, reducing manual effort by 60% and improving workflow efficiency.",
+      "Developed web scraping pipelines to extract and process structured data from multiple web sources.",
+      "Designed and implemented AI-driven backend solutions using Python and FastAPI for intelligent data processing and automation.",
+      "Collaborated with team on debugging, testing, and deployment across development lifecycle."
     ],
-    tech: ["React", "TypeScript", "Vite", "Tailwind", "REST APIs", "JWT"]
+    tech: ["React", "Next.js", "TypeScript", "Python", "FastAPI", "REST APIs", "Web Scraping"]
   }
 ];
 

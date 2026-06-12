@@ -23,10 +23,8 @@ export const SKILL_PLANETS = [
 
 export const TIMELINE_STATIONS = [
   { label: 'CSE Student', year: '2022', z: 0, color: '#ffcc00' },
-  { label: 'Operations Lead', year: '2023', z: -15, color: '#ff6c00' },
-  { label: 'Web Dev Intern', year: '2024', z: -30, color: '#00ff88' },
-  { label: 'AI Freelancer', year: '2024', z: -45, color: '#ff0080' },
-  { label: 'Frontend Engineer', year: '2025', z: -60, color: '#00f0ff' },
+  { label: 'JOVAC Training', year: '2024', z: -20, color: '#00ff88' },
+  { label: 'Webninjaz Intern', year: '2025', z: -40, color: '#00f0ff' },
 ];
 
 const SpaceCanvas: React.FC<SpaceCanvasProps> = ({
