@@ -1,89 +1,351 @@
-import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Award, RefreshCw, Layers } from 'lucide-react';
-import { spaceAudio } from '../utils/audio';
-import { SKILL_PLANETS } from './SpaceCanvas';
+import React from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Award, RefreshCw, Layers } from "lucide-react";
+import { spaceAudio } from "../utils/audio";
+import { SKILL_PLANETS } from "./SpaceCanvas";
 
 interface SkillsProps {
   selectedSkill: string | null;
   setSelectedSkill: (skill: string | null) => void;
 }
 
-const SKILL_DETAILS: Record<string, {
-  level: number;
-  role: string;
-  useCase: string;
-  projects: string[];
-  desc: string;
-}> = {
-  React: {
-    level: 88,
-    role: "Core Web Client",
-    useCase: "Building highly responsive dashboard UIs, state synchronization with Websockets, and custom reusable canvas interfaces.",
-    projects: ["Resume Analyzer AI", "PDF Chatbot", "OT Scheduler", "TeamSphere"],
-    desc: "Primary clientside engine. Specialize in custom hooks, context state management, and Framer Motion animation layouts.",
+const SKILL_DETAILS: Record<
+  string,
+  {
+    level: number;
+    role: string;
+    useCase: string;
+    projects: string[];
+    desc: string;
+  }
+> = {
+  Java: {
+    level: 75,
+    role: "Object-Oriented Programming Core",
+    desc: "Rigorous academic and algorithmic backend foundations utilizing typed OOP.",
+    useCase:
+      "Developing data structures, algorithmic puzzles, and fundamental software design.",
+    projects: ["University Lab Projects"],
   },
-  TypeScript: {
-    level: 80,
-    role: "Type Safety & Security",
-    useCase: "Strict interface mapping, API payload formatting, and state type checking across frontend microservices.",
-    projects: ["OT Scheduler", "TeamSphere", "PMCH Platform"],
-    desc: "Ensuring compiler safety and structure across scaled developer modules.",
+  JavaScript: {
+    level: 85,
+    role: "Dynamic Scripting Core",
+    desc: "Primary scripting standard for clientside dynamics, socket logic, and fullstack applications.",
+    useCase:
+      "Developing UI scripts, canvas integrations, and scalable middleware handlers.",
+    projects: ["TeamSphere Hub", "Marketplace Platform", "GGs Forex Board"],
   },
   Python: {
-    level: 84,
-    role: "AI Inference & Script Automation",
-    useCase: "Developing NLP parsing scripts, web scraping pipelines, and backends utilizing LangChain nodes.",
-    projects: ["Resume Analyzer AI", "PDF Chatbot", "CP-KYC Automation"],
-    desc: "Core backend language for data manipulation, mathematical engines, and artificial intelligence wrappers.",
+    level: 86,
+    role: "AI Orchestration & Script Automation Core",
+    desc: "Leading language for web crawling algorithms, predictive API engines, and data pipeline tasks.",
+    useCase:
+      "Coordinating multi-agent systems, file scraping automation, and document parser routines.",
+    projects: [
+      "Research Assistant AI",
+      "Resume Analyzer AI",
+      "PDF Chatbot RAG",
+      "CP-KYC Automation",
+    ],
+  },
+  SQL: {
+    level: 80,
+    role: "Relational Queries & Schemas",
+    desc: "Query optimization, indexing structures, and relational layout planning.",
+    useCase:
+      "Storing constraint variables, staff rosters, and client onboarding accounts.",
+    projects: ["OT Scheduler Platform"],
+  },
+  "Node.js": {
+    level: 82,
+    role: "Server Platform Core",
+    desc: "Event-driven runtime engine for high-traffic real-time websocket and server setups.",
+    useCase:
+      "Coordinating media sockets, real-time whiteboards, and API routes.",
+    projects: ["TeamSphere Hub", "AI Chat Application", "Marketplace Platform"],
+  },
+  "Express.js": {
+    level: 82,
+    role: "Server Middleware Routing",
+    desc: "Flexible routing engine supporting auth configurations and clean endpoint handlers.",
+    useCase:
+      "Exposing checkout links, scheduling records, and static website configurations.",
+    projects: [
+      "TeamSphere Hub",
+      "OT Scheduler Platform",
+      "Marketplace Platform",
+    ],
   },
   FastAPI: {
-    level: 78,
-    role: "High-Performance REST APIs",
-    useCase: "Creating light, async API endpoints to serve ML predictions and coordinate vector lookups.",
-    projects: ["Resume Analyzer AI", "PDF Chatbot", "CP-KYC Automation"],
-    desc: "Ultra-fast ASGI framework. Leverage its native async routines and automatic OpenAPI schema compilers.",
+    level: 80,
+    role: "Async REST APIs",
+    desc: "High-speed Python framework leveraging ASGI for quick AI inference calls and vector retrieval.",
+    useCase:
+      "Processing document parses, returning similarity scores, and serving AI responses.",
+    projects: [
+      "Research Assistant AI",
+      "Resume Analyzer AI",
+      "PDF Chatbot RAG",
+      "CP-KYC Automation",
+    ],
   },
-  OpenAI: {
+  "REST APIs": {
+    level: 88,
+    role: "API Integration Core",
+    desc: "Constructing and integrating clean HTTP routing protocols with schema validation.",
+    useCase:
+      "Connecting client dashboards to backend scrapers and automated AI pipelines.",
+    projects: ["Resume Analyzer AI", "CP-KYC Automation", "GGs Forex Board"],
+  },
+  WebSockets: {
     level: 85,
-    role: "LLM Orchestration & Embeddings",
-    useCase: "Translating raw documents to embeddings, context search responses, and ATS evaluation pipelines.",
-    projects: ["Resume Analyzer AI", "PDF Chatbot", "AI Chat Application"],
-    desc: "Integrating advanced models (GPT-4, Ada) into production pipelines for human-like reasoning tasks.",
+    role: "Bi-directional Real-Time Data",
+    desc: "Establish low-latency, active communication pipelines between UI clients and hosting servers.",
+    useCase:
+      "Updating shared drawings on whiteboard canvas and streaming chat outputs in real-time.",
+    projects: ["TeamSphere Hub", "AI Chat Application"],
   },
-  LangChain: {
+  "Cron Jobs": {
     level: 78,
-    role: "AI Agent & Chain Builder",
-    useCase: "Chaining prompts, structuring agent action-cycles, and setting up document split/load vectors.",
-    projects: ["PDF Chatbot", "Resume Analyzer AI"],
-    desc: "Orchestrating agent workflows and conversational history loops over vector memories.",
+    role: "Time-Scheduled Tasks",
+    desc: "Automating background task loops, database cleanups, and regular system audits.",
+    useCase:
+      "Scheduling company registry scrapes and database constraints verification.",
+    projects: ["CP-KYC Automation", "OT Scheduler Platform"],
+  },
+  "React.js": {
+    level: 88,
+    role: "Core Web Component Library",
+    desc: "Creating modular component panels, global state context systems, and interactive 2D/3D visual layers.",
+    useCase:
+      "Building ATS metrics tools, clinical admin rosters, and dashboard screens.",
+    projects: [
+      "Research Assistant AI",
+      "Resume Analyzer AI",
+      "PDF Chatbot RAG",
+      "OT Scheduler Platform",
+      "TeamSphere Hub",
+    ],
+  },
+  HTML: {
+    level: 90,
+    role: "Semantic Web Structure",
+    desc: "Valid, search-optimized page layouts employing modern HTML5 elements.",
+    useCase:
+      "Building page forms, blueprint graphs, and clean navigation layouts.",
+    projects: ["All Front-End Systems"],
+  },
+  CSS: {
+    level: 85,
+    role: "Futuristic Styling & Aesthetics",
+    desc: "Configuring layout stylesheets, neon glows, glass effects, and micro-interactions.",
+    useCase: "Implementing dark theme dashboards, neon grids, and animations.",
+    projects: ["All Front-End Systems", "GGs Forex Board"],
+  },
+  TypeScript: {
+    level: 82,
+    role: "Strict Type Safety Core",
+    desc: "Catching runtime bugs at build time and mapping exact interface data templates.",
+    useCase:
+      "Defining types for API bodies, component states, and canvas drawings.",
+    projects: ["OT Scheduler Platform", "TeamSphere Hub", "PMCH Platform"],
   },
   MongoDB: {
     level: 80,
-    role: "NoSQL Database Logs",
-    useCase: "Handling real-time chat histories, user account metrics, and flexible metadata documents.",
-    projects: ["TeamSphere", "Marketplace Platform", "PMCH Platform"],
-    desc: "Storing horizontal, high-scale application state documents.",
+    role: "NoSQL Document DB",
+    desc: "Flexible, horizontally-scalable JSON document database for logging multi-format files.",
+    useCase:
+      "Storing whiteboard coordinate history, user channels, and clinical check-in logs.",
+    projects: ["TeamSphere Hub", "AI Chat Application", "Marketplace Platform"],
   },
-  Docker: {
-    level: 68,
-    role: "Containerized Deployments",
-    useCase: "Bundling microservices, scrapers, and database engines into identical runtime environments.",
-    projects: ["CP-KYC Automation"],
-    desc: "Configuring multi-stage Dockerfiles and compose setups for modular system orchestration.",
+  MySQL: {
+    level: 78,
+    role: "Relational DB Engine",
+    desc: "Handling strict schemas, database keys, and transactional integrity checks.",
+    useCase:
+      "Managing employee profiles, shifts database, and user credentials.",
+    projects: ["OT Scheduler Platform", "University Systems"],
   },
-  AWS: {
+  PostgreSQL: {
+    level: 80,
+    role: "Relational DB Engine",
+    desc: "Handling strict schemas, database keys, and transactional integrity checks.",
+    useCase:
+      "Managing user data, Financial Data, Scraped Data",
+    projects: ["OT Scheduler Platform", "PDF Chatbot", "CP-Kyc"],
+  },
+  Redis: {
+    level: 75,
+    role: "In-Memory Caching & Broker",
+    desc: "Leveraged for low-latency request caching and high-speed message pub/sub broadcasting.",
+    useCase: "Broadcasting WebSocket events and caching parsed API payloads.",
+    projects: ["AI Chat Application", "CP-KYC"],
+  },
+  Git: {
+    level: 85,
+    role: "Version Control",
+    desc: "Code repository branch tracking, code merging, and pull request audits.",
+    useCase: "Synchronizing development branches and resolving code conflicts.",
+    projects: ["All Repositories"],
+  },
+  GitHub: {
+    level: 85,
+    role: "Collaborative Code Management",
+    desc: "Publishing source records, code reviews, tracking features, and deployment integration.",
+    useCase: "Managing public code repos and automated workflow triggers.",
+    projects: ["All Repositories"],
+  },
+  GitLab: {
     level: 70,
-    role: "Cloud Compute & S3 Buckets",
-    useCase: "Uploading PDF logs, hosting server nodes, and managing CDN endpoints.",
-    projects: ["Marketplace Platform"],
-    desc: "Deploying microservices infrastructure and server storage.",
+    role: "DevOps Lifecycle Integration",
+    desc: "Repository management and deployment checks within secure company teams.",
+    useCase: "Configuring staging code reviews and team commits validation.",
+    projects: ["Webninjaz Internal Systems"],
+  },
+  "GitHub Actions": {
+    level: 75,
+    role: "CI/CD Pipeline Automation",
+    desc: "Configuring automated test runners, type checking, and deployment jobs.",
+    useCase: "Running linters and building applications automatically on push.",
+    projects: ["All Active Repositories"],
+  },
+  Postman: {
+    level: 82,
+    role: "API Diagnostic Audits",
+    desc: "Inspecting API responses, header parameters, and writing mock tests.",
+    useCase:
+      "Testing FastAPI endpoints and Express routes before UI implementation.",
+    projects: ["All Backend Projects"],
+  },
+  Linux: {
+    level: 78,
+    role: "Server Environments",
+    desc: "Command-line navigation, shell scripting, and application environment setups.",
+    useCase: "Configuring cloud servers and managing runtime containers.",
+    projects: ["Webninjaz Systems", "Render Deployment"],
+  },
+  "VS Code": {
+    level: 90,
+    role: "Primary Coding Environment",
+    desc: "Configuring workspace scripts, key mappings, syntax checkers, and dev server launches.",
+    useCase: "Authoring, debugging, and managing all software packages.",
+    projects: ["All Projects"],
+  },
+  "Web Scraping": {
+    level: 88,
+    role: "Data Extraction Pipelines",
+    desc: "Extracting data from web systems while evading CAPTCHA blocks and Cloudflare shielding.",
+    useCase:
+      "Mining business registration data automatically from international registries.",
+    projects: ["CP-KYC Automation", "Semantri AI"],
+  },
+  "Automation Scripts": {
+    level: 85,
+    role: "Process Automation",
+    desc: "Custom scripts to optimize system maintenance and reduce manual operational work.",
+    useCase:
+      "Sanitizing databases, triggering notifications, and scheduling API downloads.",
+    projects: ["Webninjaz Intern Tasks", "CP-KYC Automation"],
+  },
+  "AI Agents": {
+    level: 84,
+    role: "Intelligent Systems Core",
+    desc: "Creating autonomous agents that orchestrate tools and use reasoning cycles.",
+    useCase:
+      "Building KYC company registration scanners and automated research workflows.",
+    projects: ["Research Assistant AI", "CP-KYC Automation"],
+  },
+  "Generative AI": {
+    level: 86,
+    role: "LLM Systems Integration",
+    desc: "Deploying generative interfaces (GPT-4, Claude) using optimized context arrays.",
+    useCase:
+      "Generating ATS scoring reports and answering contextual document queries.",
+    projects: [
+      "Research Assistant AI",
+      "Resume Analyzer AI",
+      "PDF Chatbot RAG",
+      "AI Chat Application",
+    ],
+  },
+  "Data Pipelines": {
+    level: 80,
+    role: "ETL Optimization",
+    desc: "Ingesting document sources, cleaning structures, embedding vectors, and updating indexes.",
+    useCase: "Indexing web pages and PDF books into semantic vector databases.",
+    projects: [
+      "Research Assistant AI",
+      "PDF Chatbot RAG",
+      "Resume Analyzer AI",
+    ],
   },
 };
 
+const SKILL_CATEGORIES = [
+  {
+    title: "Programming Languages",
+    skills: ["Java", "JavaScript", "Python", "SQL"],
+    color: "var(--cyber-cyan)",
+  },
+  {
+    title: "Backend Technologies",
+    skills: [
+      "Node.js",
+      "Express.js",
+      "FastAPI",
+      "REST APIs",
+      "WebSockets",
+      "Cron Jobs",
+    ],
+    color: "var(--cyber-green)",
+  },
+  {
+    title: "Frontend Technologies",
+    skills: ["React.js", "HTML", "CSS", "TypeScript"],
+    color: "var(--cyber-pink)",
+  },
+  {
+    title: "Database Systems",
+    skills: ["MongoDB", "MySQL", "Redis", "PostgreSQL"],
+    color: "var(--cyber-yellow)",
+  },
+  {
+    title: "Tools & Platforms",
+    skills: [
+      "Git",
+      "GitHub",
+      "GitLab",
+      "GitHub Actions",
+      "Postman",
+      "Linux",
+      "VS Code",
+    ],
+    color: "var(--cyber-purple)",
+  },
+  {
+    title: "Data & Automation",
+    skills: [
+      "Web Scraping",
+      "Automation Scripts",
+      "AI Agents",
+      "Generative AI",
+      "Data Pipelines",
+    ],
+    color: "var(--cyber-orange)",
+  },
+];
+
 const CERTIFICATIONS = [
-  { title: "Back End Development & APIs", issuer: "freeCodeCamp", color: "#00ff88" },
-  { title: "Full Stack Web Development", issuer: "Coding Blocks", color: "#00f0ff" },
+  {
+    title: "Back End Development & APIs",
+    issuer: "freeCodeCamp",
+    color: "#00ff88",
+  },
+  {
+    title: "Full Stack Web Development",
+    issuer: "Coding Blocks",
+    color: "#00f0ff",
+  },
   { title: "Quality Assurance", issuer: "freeCodeCamp", color: "#ffcc00" },
 ];
 
@@ -101,20 +363,20 @@ const Skills: React.FC<SkillsProps> = ({ selectedSkill, setSelectedSkill }) => {
   return (
     <div
       style={{
-        width: '100%',
-        height: '100%',
-        display: 'grid',
-        gridTemplateColumns: '1.5fr 1fr',
+        width: "100%",
+        height: "100%",
+        display: "grid",
+        gridTemplateColumns: "1.5fr 1fr",
         gap: 20,
-        padding: '24px',
-        overflow: 'hidden',
+        padding: "24px",
+        overflow: "hidden",
       }}
       className="flex flex-col lg:grid"
     >
       {/* Left Column: Skill Planet diagnostics OR Galaxy lists */}
       <div
         className="hud-panel p-5 overflow-y-auto max-h-[50vh] lg:max-h-[82vh]"
-        style={{ border: '1px solid rgba(var(--cyber-cyan-rgb), 0.25)' }}
+        style={{ border: "1px solid rgba(var(--cyber-cyan-rgb), 0.25)" }}
       >
         <AnimatePresence mode="wait">
           {selectedSkill && SKILL_DETAILS[selectedSkill] ? (
@@ -139,7 +401,11 @@ const Skills: React.FC<SkillsProps> = ({ selectedSkill, setSelectedSkill }) => {
                   onClick={handleReset}
                   className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 border border-slate-800 text-slate-400 hover:text-cyan-400 rounded transition-colors text-[9px] cursor-none"
                 >
-                  <RefreshCw size={11} className="animate-spin" style={{ animationDuration: '4s' }} />
+                  <RefreshCw
+                    size={11}
+                    className="animate-spin"
+                    style={{ animationDuration: "4s" }}
+                  />
                   BACK TO SUMMARY
                 </button>
               </div>
@@ -148,12 +414,16 @@ const Skills: React.FC<SkillsProps> = ({ selectedSkill, setSelectedSkill }) => {
               <div className="flex flex-col gap-2 p-3 bg-slate-950/60 border border-slate-900/60 rounded">
                 <div className="flex justify-between">
                   <span className="text-slate-500">PROFICIENCY:</span>
-                  <span className="text-cyan-400 font-bold">{SKILL_DETAILS[selectedSkill].level}% PROFICIENT</span>
+                  <span className="text-cyan-400 font-bold">
+                    {SKILL_DETAILS[selectedSkill].level}% PROFICIENT
+                  </span>
                 </div>
                 <div className="h-2 bg-slate-900 rounded overflow-hidden">
                   <motion.div
                     initial={{ width: 0 }}
-                    animate={{ width: `${SKILL_DETAILS[selectedSkill].level}%` }}
+                    animate={{
+                      width: `${SKILL_DETAILS[selectedSkill].level}%`,
+                    }}
                     className="h-full bg-cyan-400 shadow-[0_0_8px_var(--cyber-cyan)]"
                   />
                 </div>
@@ -162,25 +432,42 @@ const Skills: React.FC<SkillsProps> = ({ selectedSkill, setSelectedSkill }) => {
               {/* Data fields */}
               <div className="flex flex-col gap-3 leading-relaxed">
                 <div>
-                  <span className="text-slate-500 block mb-1">ROLE / SCOPE:</span>
-                  <span className="text-slate-200">{SKILL_DETAILS[selectedSkill].role.toUpperCase()}</span>
+                  <span className="text-slate-500 block mb-1">
+                    ROLE / SCOPE:
+                  </span>
+                  <span className="text-slate-200">
+                    {SKILL_DETAILS[selectedSkill].role.toUpperCase()}
+                  </span>
                 </div>
 
                 <div>
-                  <span className="text-slate-500 block mb-1">DESCRIPTION:</span>
-                  <span className="text-slate-300">{SKILL_DETAILS[selectedSkill].desc}</span>
+                  <span className="text-slate-500 block mb-1">
+                    DESCRIPTION:
+                  </span>
+                  <span className="text-slate-300">
+                    {SKILL_DETAILS[selectedSkill].desc}
+                  </span>
                 </div>
 
                 <div>
-                  <span className="text-slate-500 block mb-1">APPLICATIONS:</span>
-                  <span className="text-slate-300">{SKILL_DETAILS[selectedSkill].useCase}</span>
+                  <span className="text-slate-500 block mb-1">
+                    APPLICATIONS:
+                  </span>
+                  <span className="text-slate-300">
+                    {SKILL_DETAILS[selectedSkill].useCase}
+                  </span>
                 </div>
 
                 <div>
-                  <span className="text-slate-500 block mb-1">PROJECTS INTEGRATED:</span>
+                  <span className="text-slate-500 block mb-1">
+                    PROJECTS INTEGRATED:
+                  </span>
                   <div className="flex flex-wrap gap-1.5 mt-1">
-                    {SKILL_DETAILS[selectedSkill].projects.map(proj => (
-                      <span key={proj} className="px-2 py-0.5 bg-slate-900 border border-slate-800 text-cyan-300 text-[9px] rounded-sm">
+                    {SKILL_DETAILS[selectedSkill].projects.map((proj) => (
+                      <span
+                        key={proj}
+                        className="px-2 py-0.5 bg-slate-900 border border-slate-800 text-cyan-300 text-[9px] rounded-sm"
+                      >
                         {proj}
                       </span>
                     ))}
@@ -197,35 +484,60 @@ const Skills: React.FC<SkillsProps> = ({ selectedSkill, setSelectedSkill }) => {
             >
               <div className="border-b border-slate-900 pb-2 flex items-center gap-2">
                 <Layers size={13} className="text-cyan-400" />
-                <span className="tracking-wider text-slate-400 uppercase">TECHNICAL SKILLS DIAGNOSTIC</span>
+                <span className="tracking-wider text-slate-400 uppercase">
+                  TECHNICAL SKILLS DIAGNOSTIC
+                </span>
               </div>
               <p className="text-[10px] text-slate-500 leading-relaxed">
-                This section maps Gautam's technical skills. Click any planet in the interactive 3D view or use the quick access buttons below to see details.
+                Click any key technology planet in the 3D cockpit or select a
+                diagnostic profile from the categorized lists below to inspect
+                details.
               </p>
 
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-2">
-                {SKILL_PLANETS.map((planet) => (
-                  <button
-                    key={planet.name}
-                    onClick={() => handleSkillSelect(planet.name)}
-                    onMouseEnter={() => spaceAudio.playHover()}
-                    className="flex flex-col gap-2 p-3 bg-slate-950/40 border border-slate-900 hover:border-cyan-500/30 rounded text-left transition-colors cursor-none group"
+              <div className="flex flex-col gap-4 mt-1">
+                {SKILL_CATEGORIES.map((cat) => (
+                  <div
+                    key={cat.title}
+                    className="border border-slate-900/60 p-3 bg-slate-950/20 rounded flex flex-col gap-2"
                   >
-                    <div className="flex items-center justify-between">
-                      <span className="font-bold text-slate-200 group-hover:text-cyan-400 transition-colors uppercase">
-                        {planet.name}
-                      </span>
-                      <span style={{ color: planet.color }} className="text-[8px] animate-pulse">●</span>
+                    <span
+                      style={{ color: cat.color }}
+                      className="text-[9px] font-bold tracking-widest uppercase border-b border-slate-900/40 pb-1"
+                    >
+                      // {cat.title}
+                    </span>
+                    <div className="flex flex-wrap gap-2">
+                      {cat.skills.map((skillName) => {
+                        const isPlanet = SKILL_PLANETS.some(
+                          (p) => p.name === skillName,
+                        );
+                        return (
+                          <button
+                            key={skillName}
+                            onClick={() => handleSkillSelect(skillName)}
+                            onMouseEnter={() => spaceAudio.playHover()}
+                            style={{
+                              border: isPlanet
+                                ? `1px dashed ${cat.color}`
+                                : "1px solid rgba(255,255,255,0.04)",
+                              background: "rgba(3,4,15,0.4)",
+                            }}
+                            className="px-2.5 py-1.5 rounded hover:bg-slate-900/80 hover:border-slate-700 text-slate-300 hover:text-cyan-400 font-mono text-[9px] transition-all flex items-center gap-1 cursor-none"
+                          >
+                            <span>{skillName.toUpperCase()}</span>
+                            {isPlanet && (
+                              <span
+                                style={{ color: cat.color }}
+                                className="text-[8px] animate-pulse"
+                              >
+                                ●
+                              </span>
+                            )}
+                          </button>
+                        );
+                      })}
                     </div>
-                    {SKILL_DETAILS[planet.name] && (
-                      <div className="w-full h-1 bg-slate-900 rounded overflow-hidden">
-                        <div
-                          style={{ width: `${SKILL_DETAILS[planet.name].level}%`, backgroundColor: planet.color }}
-                          className="h-full"
-                        />
-                      </div>
-                    )}
-                  </button>
+                  </div>
                 ))}
               </div>
             </motion.div>
@@ -236,7 +548,7 @@ const Skills: React.FC<SkillsProps> = ({ selectedSkill, setSelectedSkill }) => {
       {/* Right Column: Holographic Certificate Artifacts */}
       <div
         className="hud-panel p-5 overflow-y-auto flex flex-col gap-4 max-h-[30vh] lg:max-h-[82vh]"
-        style={{ border: '1px solid rgba(var(--cyber-cyan-rgb), 0.25)' }}
+        style={{ border: "1px solid rgba(var(--cyber-cyan-rgb), 0.25)" }}
       >
         <div className="font-mono text-[10px] tracking-wider text-slate-400 border-b border-slate-900 pb-2 flex items-center gap-2">
           <Award size={13} className="text-cyan-400" />
@@ -251,8 +563,8 @@ const Skills: React.FC<SkillsProps> = ({ selectedSkill, setSelectedSkill }) => {
               onMouseEnter={() => spaceAudio.playHover()}
               style={{
                 borderLeft: `3px solid ${c.color}`,
-                border: '1px solid rgba(255,255,255,0.03)',
-                background: 'rgba(3,4,15,0.4)',
+                border: "1px solid rgba(255,255,255,0.03)",
+                background: "rgba(3,4,15,0.4)",
               }}
               className="p-3 rounded flex gap-3 items-center group cursor-none hover:bg-slate-950/80 transition-colors"
             >
@@ -260,8 +572,12 @@ const Skills: React.FC<SkillsProps> = ({ selectedSkill, setSelectedSkill }) => {
                 🏆
               </div>
               <div className="flex-1 min-w-0">
-                <div className="font-bold text-slate-200 truncate uppercase tracking-wider">{c.title}</div>
-                <div className="text-slate-500 text-[8px] mt-0.5 uppercase tracking-widest">{c.issuer}</div>
+                <div className="font-bold text-slate-200 truncate uppercase tracking-wider">
+                  {c.title}
+                </div>
+                <div className="text-slate-500 text-[8px] mt-0.5 uppercase tracking-widest">
+                  {c.issuer}
+                </div>
               </div>
             </motion.div>
           ))}

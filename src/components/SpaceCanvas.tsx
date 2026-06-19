@@ -10,15 +10,15 @@ interface SpaceCanvasProps {
 }
 
 export const SKILL_PLANETS = [
-  { name: 'React', color: '#00f0ff', size: 0.8, distance: 5, speed: 0.01 },
+  { name: 'React.js', color: '#00f0ff', size: 0.8, distance: 5, speed: 0.01 },
   { name: 'TypeScript', color: '#007acc', size: 0.65, distance: 7, speed: 0.008 },
   { name: 'Python', color: '#ffcc00', size: 0.75, distance: 9, speed: 0.006 },
   { name: 'FastAPI', color: '#009688', size: 0.55, distance: 11, speed: 0.012 },
-  { name: 'OpenAI', color: '#ff0080', size: 0.8, distance: 13, speed: 0.005 },
-  { name: 'LangChain', color: '#00ff88', size: 0.7, distance: 15, speed: 0.007 },
+  { name: 'Node.js', color: '#68a063', size: 0.7, distance: 13, speed: 0.01 },
+  { name: 'AI Agents', color: '#ff0080', size: 0.8, distance: 15, speed: 0.005 },
   { name: 'MongoDB', color: '#4db33d', size: 0.65, distance: 17, speed: 0.004 },
-  { name: 'Docker', color: '#2496ed', size: 0.6, distance: 19, speed: 0.009 },
-  { name: 'AWS', color: '#ff9900', size: 0.7, distance: 21, speed: 0.003 },
+  { name: 'Redis', color: '#d82c20', size: 0.6, distance: 19, speed: 0.009 },
+  { name: 'Git', color: '#f05032', size: 0.55, distance: 21, speed: 0.011 },
 ];
 
 export const TIMELINE_STATIONS = [
@@ -170,7 +170,7 @@ const SpaceCanvas: React.FC<SpaceCanvasProps> = ({
       color: 0x00ffd8,
       wireframe: true,
       transparent: true,
-      opacity: 0.35,
+      opacity: 0.15,
     });
     const innerSphere = new THREE.Mesh(sphereGeo, sphereMat);
     aiCore.add(innerSphere);
@@ -184,7 +184,7 @@ const SpaceCanvas: React.FC<SpaceCanvasProps> = ({
       const ringMat = new THREE.MeshBasicMaterial({
         color: ringColors[i],
         transparent: true,
-        opacity: 0.6,
+        opacity: 0.25,
       });
       const ring = new THREE.Mesh(ringGeo, ringMat);
       // Stagger rotation
@@ -210,7 +210,7 @@ const SpaceCanvas: React.FC<SpaceCanvasProps> = ({
       color: 0xa855f7,
       size: 0.08,
       transparent: true,
-      opacity: 0.8,
+      opacity: 0.35,
     });
     const coreParticles = new THREE.Points(coreParticlesGeo, corePMaterial);
     aiCore.add(coreParticles);
@@ -408,8 +408,8 @@ const SpaceCanvas: React.FC<SpaceCanvasProps> = ({
       // ==========================================
       switch (mode) {
         case 'intro':
-          targetCameraPos.set(0 + mouseRef.current.x * 1.5, 0 + mouseRef.current.y * 1.5, 8);
-          targetCameraLookAt.set(0, 0, 0);
+          targetCameraPos.set(-1.8 + mouseRef.current.x * 1.5, 0.6 + mouseRef.current.y * 1.5, 9);
+          targetCameraLookAt.set(-1.8, 0.6, 0);
           break;
         case 'missions':
           targetCameraPos.set(-4.5 + mouseRef.current.x * 1, 2.5 + mouseRef.current.y * 1, 14);

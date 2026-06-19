@@ -170,17 +170,19 @@ const Hero: React.FC<HeroProps> = ({ onBootComplete, audioMuted }) => {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, type: 'spring' }}
+            className="hud-panel p-6 md:p-8 flex flex-col justify-center items-center overflow-y-auto max-h-[72vh] lg:max-h-[82vh]"
             style={{
               position: 'relative',
               zIndex: 10,
-              maxWidth: 700,
+              maxWidth: 600,
               width: '100%',
-              padding: '0 24px',
               textAlign: 'center',
+              border: '1px solid rgba(var(--cyber-cyan-rgb), 0.25)',
+              margin: 'auto',
             }}
           >
             {/* HUD Status label */}
-            <div className="flex justify-center mb-6">
+            <div className="flex justify-center mb-4 flex-shrink-0">
               <div
                 style={{
                   display: 'inline-flex',
@@ -205,29 +207,28 @@ const Hero: React.FC<HeroProps> = ({ onBootComplete, audioMuted }) => {
             <h1
               style={{
                 fontFamily: 'var(--font-display)',
-                fontSize: 'clamp(38px, 6vw, 68px)',
+                fontSize: 'clamp(28px, 4.5vw, 48px)',
                 fontWeight: 900,
-                letterSpacing: '-2px',
+                letterSpacing: '-1px',
                 lineHeight: 1.1,
-                marginBottom: 16,
+                marginBottom: 12,
               }}
-              className="gradient-text-cyan neon-glow-cyan"
+              className="gradient-text-cyan neon-glow-cyan flex-shrink-0"
             >
-              GAUTAM
-              <br />
-              SARRAF
+              GAUTAM SARRAF
             </h1>
 
             {/* Typewriter Subtitle */}
             <div
               style={{
                 fontFamily: 'var(--font-mono)',
-                fontSize: 'clamp(12px, 2.2vw, 18px)',
+                fontSize: 'clamp(11px, 2vw, 15px)',
                 color: 'var(--cyber-cyan)',
-                minHeight: 24,
-                marginBottom: 20,
+                minHeight: 20,
+                marginBottom: 16,
                 letterSpacing: '2px',
               }}
+              className="flex-shrink-0"
             >
               &gt; {typedRole}
               <span className="inline-block w-1.5 h-4 bg-cyan-400 ml-1 align-middle animate-pulse" />
@@ -237,12 +238,13 @@ const Hero: React.FC<HeroProps> = ({ onBootComplete, audioMuted }) => {
             <p
               style={{
                 fontFamily: 'var(--font-body)',
-                fontSize: 13,
+                fontSize: 12,
                 color: 'var(--text-muted)',
-                lineHeight: 1.7,
+                lineHeight: 1.6,
                 maxWidth: 480,
-                margin: '0 auto 36px',
+                margin: '0 auto 20px',
               }}
+              className="flex-shrink-0"
             >
               Building modern web applications and intelligent systems. Specializing in AI-driven solutions, robust backends, and full stack engineering.
             </p>
