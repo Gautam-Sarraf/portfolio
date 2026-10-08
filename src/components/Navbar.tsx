@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Activity, Compass, Cpu, Volume2, VolumeX, ShieldAlert, Radio } from 'lucide-react';
+import {
+  Activity,
+  Compass,
+  Volume2,
+  VolumeX,
+  Download,
+  Terminal,
+} from 'lucide-react';
 import { spaceAudio } from '../utils/audio';
 
 interface NavbarProps {
@@ -11,18 +17,24 @@ interface NavbarProps {
 }
 
 const navItems = [
-  { id: 'intro', label: 'ABOUT', index: '01' },
-  { id: 'skills', label: 'SKILLS', index: '02' },
+  { id: 'intro', label: 'OVERVIEW', index: '01' },
+  { id: 'skills', label: 'TECH STACK', index: '02' },
   { id: 'missions', label: 'PROJECTS', index: '03' },
-  { id: 'timeline', label: 'EXPERIENCE', index: '04' },
-  { id: 'contact', label: 'CONTACT', index: '05' },
+  { id: 'fullstack', label: 'FULL STACK', index: '04' },
+  { id: 'timeline', label: 'EXPERIENCE', index: '05' },
+  { id: 'notes', label: 'NOTES', index: '06' },
+  { id: 'contact', label: 'CONTACT', index: '07' },
 ];
 
-const Navbar: React.FC<NavbarProps> = ({ mode, setMode, audioMuted, toggleAudio }) => {
+export const Navbar: React.FC<NavbarProps> = ({
+  mode,
+  setMode,
+  audioMuted,
+  toggleAudio,
+}) => {
   const [latency, setLatency] = useState(14);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // Simulate network latency fluctuations for cockpit realism
   useEffect(() => {
     const interval = setInterval(() => {
       setLatency(Math.floor(Math.random() * 8) + 10);
@@ -49,138 +61,155 @@ const Navbar: React.FC<NavbarProps> = ({ mode, setMode, audioMuted, toggleAudio 
         right: 0,
         zIndex: 1000,
         height: 64,
-        background: 'linear-gradient(to bottom, rgba(2, 2, 5, 0.95) 0%, rgba(2, 2, 5, 0.4) 100%)',
+        background: 'linear-gradient(to bottom, rgba(2, 2, 5, 0.96) 0%, rgba(2, 2, 5, 0.6) 100%)',
         borderBottom: '1px solid rgba(var(--cyber-cyan-rgb), 0.15)',
-        backdropFilter: 'blur(10px)',
+        backdropFilter: 'blur(12px)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding: '0 24px',
+        padding: '0 20px',
         fontFamily: 'var(--font-mono)',
       }}
     >
-      {/* HUD left: Diagnostics */}
-      <div
-        style={{ display: 'flex', alignItems: 'center', gap: 16 }}
-        className="hidden lg:flex"
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Cpu size={14} className="text-cyan-400 animate-pulse" />
-          <span style={{ fontSize: 10, color: 'var(--text-muted)', letterSpacing: '1px' }}>
-            SYSTEM:<span className="text-cyan-400 ml-1">PORTFOLIO v4.0</span>
-          </span>
-        </div>
-        <div style={{ width: 1, height: 12, background: 'rgba(255,255,255,0.1)' }} />
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <Radio size={12} className="text-green-400" />
-          <span style={{ fontSize: 10, color: 'var(--text-muted)', letterSpacing: '1px' }}>
-            NET:<span className="text-green-400 ml-1">STABLE</span>
-          </span>
+      {/* HUD left: Diagnostics & Brand */}
+      <div className="flex items-center gap-4">
+        <button
+          onClick={() => handleTabChange('intro')}
+          className="flex items-center gap-2 text-left bg-transparent border-0 cursor-pointer p-0"
+        >
+          <div className="w-6 h-6 rounded bg-cyan-500/10 border border-cyan-400/50 flex items-center justify-center text-cyan-400">
+            <Terminal size={13} />
+          </div>
+          <div className="flex flex-col">
+            <span
+              className="text-xs font-black tracking-wider text-white"
+              style={{ fontFamily: 'var(--font-display)' }}
+            >
+              GAUTAM SARRAF
+            </span>
+            <span className="text-[9px] text-cyan-400 tracking-widest hidden sm:inline">
+              FULL STACK · AI · BACKEND
+            </span>
+          </div>
+        </button>
+
+        <div className="hidden xl:flex items-center gap-3 text-[10px] text-slate-500 pl-3 border-l border-slate-800">
+          <div className="flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+            <span className="text-slate-400">STATUS:</span>
+            <span className="text-green-400 font-bold">ONLINE</span>
+          </div>
         </div>
       </div>
 
       {/* Main Tabs (Center Navigation Cockpit) */}
-      <div
-        className="hidden md:flex"
+      <nav
+        className="hidden lg:flex"
         style={{
           display: 'flex',
-          gap: 6,
-          background: 'rgba(3, 4, 15, 0.8)',
+          gap: 4,
+          background: 'rgba(3, 4, 15, 0.85)',
           border: '1px solid rgba(var(--cyber-cyan-rgb), 0.15)',
           borderRadius: 8,
           padding: '4px',
         }}
+        aria-label="Main Navigation"
       >
         {navItems.map((item) => {
           const isActive = mode === item.id;
           return (
-            <motion.button
+            <button
               key={item.id}
               onClick={() => handleTabChange(item.id)}
               onMouseEnter={() => spaceAudio.playHover()}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: 8,
-                padding: '6px 14px',
+                gap: 6,
+                padding: '6px 12px',
                 borderRadius: 6,
                 border: 'none',
-                cursor: 'none',
+                cursor: 'pointer',
                 fontSize: 10,
                 fontWeight: 700,
-                letterSpacing: '2px',
+                letterSpacing: '1.5px',
                 color: isActive ? '#000' : 'var(--text-primary)',
                 background: isActive
-                  ? 'linear-gradient(135deg, var(--cyber-cyan), var(--cyber-green))'
+                  ? 'linear-gradient(135deg, var(--cyber-cyan), #00ff88)'
                   : 'transparent',
                 boxShadow: isActive ? '0 0 15px rgba(var(--cyber-cyan-rgb), 0.3)' : 'none',
-                transition: 'color 0.2s, background 0.2s',
+                transition: 'all 0.2s',
               }}
             >
               <span style={{ opacity: isActive ? 0.8 : 0.4, fontSize: 8 }}>{item.index}</span>
               {item.label}
-            </motion.button>
+            </button>
           );
         })}
-      </div>
+      </nav>
 
-      {/* Mobile Title */}
-      <div className="flex md:hidden items-center gap-2">
-        <Compass className="text-cyan-400 animate-spin" style={{ animationDuration: '6s' }} size={16} />
-        <span style={{ fontFamily: 'var(--font-display)', fontSize: 12, fontWeight: 900, color: 'var(--cyber-cyan)', letterSpacing: '2px' }}>
-          GAUTAM // PORTFOLIO
-        </span>
-      </div>
+      {/* HUD right: Download Resume, Latency, audio controls, hamburger */}
+      <div className="flex items-center gap-3 sm:gap-4">
+        {/* Prominent Resume Download Button */}
+        <a
+          href="/Gautam_Sarraf_resume.pdf"
+          download="Gautam_Sarraf_resume.pdf"
+          target="_blank"
+          rel="noopener noreferrer"
+          onMouseEnter={() => spaceAudio.playHover()}
+          onClick={() => spaceAudio.playClick()}
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-cyan-500/10 hover:bg-cyan-500 text-cyan-300 hover:text-slate-950 border border-cyan-400/40 text-[10px] font-bold rounded transition-all tracking-wider"
+          aria-label="Download Gautam Sarraf Resume"
+        >
+          <Download size={12} />
+          <span className="hidden sm:inline">RESUME</span>
+        </a>
 
-      {/* HUD right: Latency, audio controls, hamburger */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }} className="hidden sm:flex">
+        {/* Latency */}
+        <div className="hidden sm:flex items-center gap-1.5 text-[10px] text-slate-400">
           <Activity size={12} className="text-cyan-400" />
-          <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>
-            LATENCY:<span className="text-cyan-400 ml-1">{latency}ms</span>
-          </span>
+          <span>{latency}ms</span>
         </div>
-        <div style={{ width: 1, height: 12, background: 'rgba(255,255,255,0.1)' }} className="hidden sm:block" />
 
-        {/* Audio Speaker HUD toggle */}
+        {/* Audio Toggle */}
         <button
           onClick={toggleAudio}
           onMouseEnter={() => spaceAudio.playHover()}
+          aria-label={audioMuted ? 'Turn Sound On' : 'Turn Sound Off'}
           style={{
             background: 'none',
             border: 'none',
             color: audioMuted ? 'var(--cyber-orange)' : 'var(--cyber-cyan)',
-            cursor: 'none',
+            cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
-            gap: 6,
+            gap: 4,
             fontSize: 9,
             padding: 6,
           }}
         >
           {audioMuted ? <VolumeX size={15} /> : <Volume2 size={15} />}
-          <span className="hidden md:inline" style={{ letterSpacing: '1px' }}>
-            {audioMuted ? 'SOUND OFF' : 'SOUND ON'}
-          </span>
         </button>
 
         {/* Mobile menu Hamburger */}
         <button
-          onClick={() => { spaceAudio.playClick(); setMenuOpen(!menuOpen); }}
-          className="md:hidden flex items-center justify-center p-2 rounded"
+          onClick={() => {
+            spaceAudio.playClick();
+            setMenuOpen(!menuOpen);
+          }}
+          className="lg:hidden flex items-center justify-center p-2 rounded cursor-pointer"
           style={{
             border: '1px solid rgba(var(--cyber-cyan-rgb), 0.3)',
             background: 'rgba(3, 4, 15, 0.6)',
             color: 'var(--cyber-cyan)',
           }}
+          aria-label="Open Navigation Menu"
         >
           <Compass size={16} />
         </button>
       </div>
 
-      {/* Holographic Navigation panel overlay for mobile */}
+      {/* Holographic Navigation overlay for mobile */}
       {menuOpen && (
         <div
           style={{
@@ -193,16 +222,15 @@ const Navbar: React.FC<NavbarProps> = ({ mode, setMode, audioMuted, toggleAudio 
             padding: 16,
             display: 'flex',
             flexDirection: 'column',
-            gap: 8,
+            gap: 6,
             backdropFilter: 'blur(20px)',
+            zIndex: 1001,
           }}
-          className="md:hidden"
+          className="lg:hidden shadow-2xl"
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8, padding: '0 8px' }}>
-            <ShieldAlert size={12} className="text-orange-400" />
-            <span style={{ fontSize: 9, color: 'var(--cyber-orange)', letterSpacing: '1px' }}>
-              NAVIGATION MENU
-            </span>
+          <div className="flex items-center justify-between mb-2 px-2 text-[9px] text-slate-400 font-bold border-b border-slate-900 pb-2">
+            <span>// NAVIGATION INDEX</span>
+            <span className="text-cyan-400">GAUTAM.SYS</span>
           </div>
           {navItems.map((item) => (
             <button
@@ -210,14 +238,18 @@ const Navbar: React.FC<NavbarProps> = ({ mode, setMode, audioMuted, toggleAudio 
               onClick={() => handleTabChange(item.id)}
               style={{
                 width: '100%',
-                padding: '12px',
+                padding: '10px 14px',
                 textAlign: 'left',
                 borderRadius: 6,
                 border: 'none',
-                background: mode === item.id ? 'linear-gradient(135deg, rgba(var(--cyber-cyan-rgb), 0.2), rgba(var(--cyber-green-rgb), 0.1))' : 'rgba(255,255,255,0.02)',
+                cursor: 'pointer',
+                background:
+                  mode === item.id
+                    ? 'linear-gradient(135deg, rgba(var(--cyber-cyan-rgb), 0.2), rgba(0, 255, 136, 0.1))'
+                    : 'rgba(255,255,255,0.02)',
                 color: mode === item.id ? 'var(--cyber-cyan)' : 'var(--text-primary)',
-                fontSize: 10,
-                letterSpacing: '2px',
+                fontSize: 11,
+                letterSpacing: '1.5px',
                 fontWeight: 700,
                 borderLeft: mode === item.id ? '3px solid var(--cyber-cyan)' : 'none',
               }}
@@ -225,6 +257,16 @@ const Navbar: React.FC<NavbarProps> = ({ mode, setMode, audioMuted, toggleAudio 
               [{item.index}] {item.label}
             </button>
           ))}
+
+          <a
+            href="/Gautam_Sarraf_resume.pdf"
+            download="Gautam_Sarraf_resume.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-2 flex items-center justify-center gap-2 p-2.5 bg-cyan-500 text-slate-950 font-bold text-xs rounded tracking-wider text-center"
+          >
+            <Download size={14} /> DOWNLOAD RESUME PDF
+          </a>
         </div>
       )}
     </header>

@@ -1,433 +1,311 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, GitPullRequest, ExternalLink, Network, FileCode, CheckCircle } from 'lucide-react';
+import {
+  Github,
+  Layers,
+  ArrowRight,
+  Sparkles,
+} from 'lucide-react';
+import { PROJECTS } from '../data/projectsData';
+import { SectionHeader } from './About';
+import DocumentEngineSection from './DocumentEngineSection';
 import { spaceAudio } from '../utils/audio';
 
-interface Project {
-  id: string;
-  title: string;
-  subtitle: string;
-  description: string;
-  problem: string;
-  architecture: string;
-  tech: string[];
-  challenges: string;
-  impact: string;
-  github: string;
-  demo?: string | null;
-  nodes: string[]; // for blueprint visualization
-}
+export const Projects: React.FC = () => {
+  const [filterCategory, setFilterCategory] = useState<string>('ALL');
 
-const MISSIONS: Project[] = [
-  {
-    id: "research-assistant",
-    title: "Research Assistant AI",
-    subtitle: "Egregor Insights Hub",
-    description: "An AI-powered research hub that extracts expert-crafted, results-driven insights from complex business datasets and documents.",
-    problem: "Traditional research methods require manual synthesis of massive volumes of industry data, leading to slow insights delivery.",
-    architecture: "React UI -> FastAPI Backend -> OpenAI Embedding Model -> Custom Document Parser -> RAG Summarizer Flow.",
-    tech: ["React", "FastAPI", "Python", "OpenAI API", "RAG", "Tailwind"],
-    challenges: "Normalizing and parsing complex document hierarchies while preserving context for the LLM to prevent analytical hallucinations.",
-    impact: "Enables researchers to synthesize multi-page market briefs in seconds with a 3x speedup in analysis cycles.",
-    github: "https://github.com/gautam-sarraf",
-    demo: "https://research-assistant-uoe0.onrender.com",
-    nodes: ["Doc Ingest", "FastAPI Node", "Semantic Split", "RAG Agent", "Insight UI"],
-  },
-  {
-    id: "semantri-chatbot",
-    title: "Semantri AI",
-    subtitle: "Interactive Website Chatbot",
-    description: "A semantic search chatbot that reads, indexes, and queries any web URL in real-time to answer natural language questions.",
-    problem: "Browsing dense website pages and manuals is time-consuming; users need a quick conversational tool targeted at specific URLs.",
-    architecture: "React Frontend -> Node.js Scraper -> Vector Database Indexer -> OpenAI API -> Q&A Chat Interface.",
-    tech: ["React", "Node.js", "Express", "Puppeteer", "Vector DB", "OpenAI API"],
-    challenges: "Executing real-time web scraping and content extraction safely and cleanly on modern dynamic sites.",
-    impact: "Delivers instant, context-specific answers from any URL in under 2 seconds.",
-    github: "https://github.com/gautam-sarraf",
-    demo: "https://web-chatbot-8w8c.onrender.com",
-    nodes: ["URL Input", "Web Scraper", "Vector Store", "OpenAI Core", "Chat UI"],
-  },
-  {
-    id: "resume-analyzer",
-    title: "Resume Analyzer AI",
-    subtitle: "ATS Optimization Pipeline",
-    description: "AI engine that parses resumes, analyzes skill alignment against job specs, and provides ATS improvement recommendations.",
-    problem: "Manual screening of hundreds of resumes results in massive recruiter overhead and high candidate false-negatives due to keyword filters.",
-    architecture: "PDF Extractor -> FastAPI Node -> OpenAI Embeddings -> Vector Similarity Score -> ATS Report Generator.",
-    tech: ["Python", "FastAPI", "OpenAI API", "FAISS", "NLP", "React"],
-    challenges: "Handling nested multi-column PDF layouts and extracting structured sections accurately without losing layout context.",
-    impact: "Boosted candidate selection matching accuracy by 44% and reduced ATS drop-offs.",
-    github: "https://github.com/gautam-sarraf",
-    nodes: ["User Upload", "FastAPI Parser", "OpenAI NLP", "ATS Scorer", "Report UI"],
-  },
-  {
-    id: "pdf-chatbot",
-    title: "PDF Chatbot RAG",
-    subtitle: "Semantic Doc Q&A System",
-    description: "RAG chatbot allowing users to upload large PDF books and query them using natural language with source attribution.",
-    problem: "Static document search fails to resolve semantic queries, forcing users to manually read long manuals to answer simple questions.",
-    architecture: "PDF Chunking -> OpenAI Ada -> Pinecone/ChromaDB -> RAG Context Fetcher -> GPT-4 Response Stream.",
-    tech: ["Python", "OpenAI", "LangChain", "ChromaDB", "FastAPI", "React"],
-    challenges: "Preventing model hallucination on domain-specific manuals and optimizing semantic chunk-overlap search parameters.",
-    impact: "Instant context-aware document queries with 99.1% factual retrieval accuracy.",
-    github: "https://github.com/gautam-sarraf",
-    nodes: ["PDF Book", "LangChain Chunk", "Vector DB", "Context RAG", "GPT-4 Stream"],
-  },
-  {
-    id: "cp-kyc",
-    title: "CP-KYC Automation",
-    subtitle: "AI Agent Verification",
-    description: "Enterprise compliance agent scraping public database registries to verify company corporate registrations automatically.",
-    problem: "KYC verification takes days of manual search across scattered international databases, leading to client onboarding delays.",
-    architecture: "Web Agent -> Puppeteer Node -> OCR Parser -> Risk Analysis Agent -> Approval Dashboard.",
-    tech: ["Python", "FastAPI", "Puppeteer", "PostgreSQL", "Docker", "REST API"],
-    challenges: "Overcoming strict scraping blocks (Cloudflare, Captchas) on government registry databases and structuring raw data.",
-    impact: "Decreased corporate KYC validation timeline from 48 hours to under 3 minutes.",
-    github: "https://github.com/gautam-sarraf",
-    nodes: ["Corporate Request", "Scraper Node", "OCR Validation", "Risk Core", "SQL DB"],
-  },
-  {
-    id: "ot-scheduler",
-    title: "OT Scheduler Platform",
-    subtitle: "Shift Allocation Engine",
-    description: "Overtime allocation system matching shift schedules with staff requirements, constraints, and historical records.",
-    problem: "Manual shift allocation creates roster conflicts, labor compliance violations, and uneven overtime distribution.",
-    architecture: "Constraint Solver Node -> Express JS -> PostgreSQL -> Roster Grid UI.",
-    tech: ["React", "TypeScript", "Node.js", "Express", "PostgreSQL", "Tailwind"],
-    challenges: "Designing an algorithm that satisfies 15+ shift constraints simultaneously while distributing hours fairly.",
-    impact: "Zero roster scheduling conflicts across 3 active corporate divisions.",
-    github: "https://github.com/gautam-sarraf",
-    nodes: ["Roster Requests", "Constraint Solver", "Postgres Write", "Live Dashboard"],
-  },
-  {
-    id: "ai-chat-app",
-    title: "AI Chat Application",
-    subtitle: "Real-time AI Assistant",
-    description: "Websocket-enabled client dashboard connecting users directly to customized LLM agent channels with memory logs.",
-    problem: "Traditional chatbot wrappers lack state persistence, conversation branches, and smooth multi-user chat distribution.",
-    architecture: "React Client -> WS Gateway -> Redis PubSub -> OpenAI Agent -> MongoDB Memory store.",
-    tech: ["Next.js", "TypeScript", "WebSockets", "Redis", "MongoDB", "OpenAI API"],
-    challenges: "Handling token streaming overhead over active WebSocket connections without causing dashboard UI freezes.",
-    impact: "Smooth real-time chat with latency under 180ms.",
-    github: "https://github.com/gautam-sarraf",
-    nodes: ["Web Interface", "WS Socket Gateway", "Redis Queue", "OpenAI Stream", "Mongo DB"],
-  },
-  {
-    id: "teamsphere",
-    title: "TeamSphere Hub",
-    subtitle: "MERN Collaborative Suite",
-    description: "Collaboration platform with WebSocket channels, peer-to-peer audio calls, whiteboard sharing, and file logs.",
-    problem: "Disjointed team tool chains (chat, whiteboards, calls) lead to context switching and productivity leaks.",
-    architecture: "React Gateway -> Express API -> Socket.io Server -> WebRTC Mesh -> MongoDB.",
-    tech: ["MongoDB", "Express", "React", "Node.js", "Socket.io", "WebRTC"],
-    challenges: "Synchronizing state updates on the interactive canvas whiteboard for dozens of concurrent peer clients.",
-    impact: "Consolidated team files and chat pipelines into a single portal.",
-    github: "https://github.com/Gautam-Sarraf/TeamSphere",
-    nodes: ["Team Clients", "Socket.io Server", "WebRTC Peer", "Mongo Cluster"],
-  },
-  {
-    id: "marketplace",
-    title: "Marketplace Platform",
-    subtitle: "Full Stack Storefront",
-    description: "High-performance ecommerce portal with elastic search, product metrics, and checkout pipelines.",
-    problem: "Slow database search and sluggish page loads reduce cart conversions in high-traffic product catalog listings.",
-    architecture: "Next.js Frontend -> Node API -> ElasticSearch Cluster -> Stripe Node -> MongoDB.",
-    tech: ["React", "Node.js", "Express", "MongoDB", "Stripe API", "Redux"],
-    challenges: "Implementing webhooks to securely process payments and update inventory indexes during concurrent race conditions.",
-    github: "https://github.com/gautam-sarraf",
-    nodes: ["Customer UI", "Products API", "Stripe Checkout", "Inventory Node", "Mongo DB"],
-  },
-  {
-    id: "ggs-forex",
-    title: "GGs Forex Board",
-    subtitle: "Exchange Rates Tracker",
-    description: "Live forex visualization panel tracking currency fluctuations and charts with responsive analytics.",
-    problem: "Sluggish rate fetches and static charts delay decision vectors for active currency trading operators.",
-    architecture: "React Frontend -> Forex API -> Chart.js renderer -> Live Alert Hook.",
-    tech: ["React", "JavaScript", "Chart.js", "REST API", "CSS3"],
-    challenges: "Structuring canvas chart re-draw routines to load years of historical forex trends seamlessly on mobile screens.",
-    github: "https://github.com/gautam-sarraf",
-    nodes: ["Visitor Client", "Forex Stream", "Chart.js Render", "Alert Dispatcher"],
-  },
-  {
-    id: "pmch-portal",
-    title: "PMCH Platform",
-    subtitle: "Healthcare Admin System",
-    description: "Holographic patient tracker, appointment planner, and clinical diagnostic workflow logs.",
-    problem: "Hospital intake logs suffer from cluttered UIs and complex clinical routing interfaces, causing operational slowdowns.",
-    architecture: "React Core -> Node Gateway -> MongoDB Hospital cluster -> Admin Shield.",
-    tech: ["React", "TypeScript", "Tailwind", "Node.js", "MongoDB"],
-    challenges: "Strict compliance schema constraints and ensuring atomic record updates across different clinic departments.",
-    github: "https://github.com/gautam-sarraf",
-    nodes: ["Patient Intake", "Admin Router", "Node Sanitizer", "MongoDB Medical"],
-  },
-];
+  const featuredProjects = PROJECTS.filter((p) => p.featured && p.tier === 1);
+  const otherProjects = PROJECTS.filter((p) => !p.featured);
 
-// Blueprint canvas visualizer component
-const BlueprintVisualizer: React.FC<{ nodes: string[] }> = ({ nodes }) => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const categories = ['ALL', 'AI / Backend', 'Automation / Infrastructure', 'Full Stack', 'Data / RAG'];
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    let animId: number;
-    let time = 0;
-
-    const render = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      time += 0.04;
-
-      const nodeCount = nodes.length;
-      const centerY = canvas.height / 2;
-      const stepX = canvas.width / (nodeCount + 0.5);
-
-      const nodeCoords = nodes.map((name, idx) => ({
-        name,
-        x: stepX * (idx + 0.75),
-        y: centerY + Math.sin(time + idx) * 4, // floating
-      }));
-
-      // Draw connection lines
-      ctx.strokeStyle = 'rgba(0, 253, 216, 0.25)';
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      for (let i = 0; i < nodeCoords.length - 1; i++) {
-        ctx.moveTo(nodeCoords[i].x, nodeCoords[i].y);
-        ctx.lineTo(nodeCoords[i + 1].x, nodeCoords[i + 1].y);
-      }
-      ctx.stroke();
-
-      // Draw flowing packets/energy particles
-      nodeCoords.forEach((node, idx) => {
-        if (idx < nodeCoords.length - 1) {
-          const nextNode = nodeCoords[idx + 1];
-          const t = (time * 0.4 + idx * 0.2) % 1.0;
-          
-          const px = node.x + (nextNode.x - node.x) * t;
-          const py = node.y + (nextNode.y - node.y) * t;
-
-          ctx.fillStyle = '#a855f7';
-          ctx.beginPath();
-          ctx.arc(px, py, 4, 0, Math.PI * 2);
-          ctx.fill();
-
-          // pulse glow
-          ctx.fillStyle = 'rgba(168, 85, 247, 0.2)';
-          ctx.beginPath();
-          ctx.arc(px, py, 8, 0, Math.PI * 2);
-          ctx.fill();
-        }
-      });
-
-      // Draw nodes
-      nodeCoords.forEach((node) => {
-        // glowing background
-        ctx.fillStyle = 'rgba(7, 10, 30, 0.9)';
-        ctx.strokeStyle = 'var(--cyber-cyan)';
-        ctx.lineWidth = 2;
-        
-        ctx.beginPath();
-        ctx.rect(node.x - 45, node.y - 18, 90, 36);
-        ctx.fill();
-        ctx.stroke();
-
-        // mini brackets
-        ctx.strokeStyle = 'rgba(0, 253, 216, 0.5)';
-        ctx.lineWidth = 1;
-        ctx.strokeRect(node.x - 49, node.y - 22, 98, 44);
-
-        // Node text label
-        ctx.fillStyle = '#e2e8f0';
-        ctx.font = '8px "Share Tech Mono"';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(node.name.toUpperCase(), node.x, node.y);
-      });
-
-      animId = requestAnimationFrame(render);
-    };
-
-    render();
-    return () => cancelAnimationFrame(animId);
-  }, [nodes]);
+  const filteredOther =
+    filterCategory === 'ALL'
+      ? otherProjects
+      : otherProjects.filter((p) => p.category === filterCategory);
 
   return (
-    <div className="bg-slate-950/80 border border-slate-900 rounded p-4 relative h-40 overflow-hidden">
-      <div className="absolute top-2 left-3 font-mono text-[9px] text-slate-500 tracking-wider flex items-center gap-2">
-        <Network size={11} className="text-cyan-400" />
-        PROJECT ARCHITECTURE BLUEPRINT
+    <div className="w-full flex flex-col gap-10 font-mono text-slate-200">
+      {/* Header */}
+      <div className="flex flex-col gap-2">
+        <SectionHeader
+          tag="02"
+          label="PORTFOLIO WORK"
+          title="Featured Systems & Production Engineering"
+          subtitle="Tiered portfolio showcasing production AI architectures, backend systems, and full-stack software."
+        />
       </div>
-      <canvas
-        ref={canvasRef}
-        width={500}
-        height={160}
-        style={{ width: '100%', height: '100%' }}
-      />
-    </div>
-  );
-};
 
-const Projects: React.FC = () => {
-  const [activeIdx, setActiveIdx] = useState(0);
-  const activeMission = MISSIONS[activeIdx];
-
-  const handleSelect = (idx: number) => {
-    spaceAudio.playClick();
-    setActiveIdx(idx);
-  };
-
-  return (
-    <div
-      style={{
-        width: '100%',
-        height: '100%',
-        display: 'grid',
-        gridTemplateColumns: 'minmax(240px, 1fr) 2fr',
-        gap: 20,
-        padding: '24px',
-        overflow: 'hidden',
-      }}
-      className="flex flex-col lg:grid"
-    >
-      {/* Left panel: Mission list */}
-      <div
-        className="hud-panel p-4 overflow-y-auto flex flex-col gap-2 max-h-[40vh] lg:max-h-[82vh]"
-        style={{ border: '1px solid rgba(var(--cyber-cyan-rgb), 0.25)' }}
-      >
-        <div className="font-mono text-[10px] tracking-wider text-slate-400 border-b border-slate-900 pb-2 mb-2 flex items-center gap-2">
-          <Shield size={12} className="text-cyan-400" />
-          PROJECT INDEX
+      {/* TIER 1: FEATURED PROJECTS */}
+      <div className="flex flex-col gap-8">
+        <div className="flex items-center justify-between border-b border-cyan-500/30 pb-2">
+          <div className="flex items-center gap-2 text-xs font-bold text-cyan-400 tracking-wider">
+            <Sparkles size={14} className="text-cyan-400" />
+            TIER 1 // FLAGSHIP & PRODUCTION ARCHITECTURES
+          </div>
+          <span className="text-[10px] text-slate-500 font-mono">HIGH-IMPACT SYSTEMS</span>
         </div>
-        
-        {MISSIONS.map((m, idx) => {
-          const isActive = idx === activeIdx;
-          return (
-            <button
-              key={m.id}
-              onClick={() => handleSelect(idx)}
-              onMouseEnter={() => spaceAudio.playHover()}
+
+        {/* Featured Project Cards - Substantial Visual Space */}
+        <div className="flex flex-col gap-8">
+          {featuredProjects.map((project, idx) => (
+            <motion.article
+              key={project.id}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.1 }}
+              className="hud-panel p-6 md:p-8 border border-cyan-500/30 flex flex-col gap-6 relative group hover:border-cyan-400/60 transition-colors"
               style={{
-                width: '100%',
-                padding: '12px 14px',
-                textAlign: 'left',
-                borderRadius: 6,
-                border: 'none',
-                background: isActive ? 'linear-gradient(135deg, rgba(var(--cyber-cyan-rgb), 0.15), rgba(var(--cyber-green-rgb), 0.05))' : 'rgba(255,255,255,0.02)',
-                color: isActive ? 'var(--cyber-cyan)' : 'var(--text-primary)',
-                borderLeft: isActive ? '3px solid var(--cyber-cyan)' : '3px solid transparent',
-                cursor: 'none',
-                transition: 'all 0.2s',
+                background: 'linear-gradient(180deg, rgba(8, 10, 31, 0.9) 0%, rgba(3, 4, 15, 0.96) 100%)',
               }}
-              className="flex justify-between items-center group hover:bg-slate-900/60"
             >
-              <div>
-                <div className="font-mono text-[11px] font-bold tracking-wider">{m.title.toUpperCase()}</div>
-                <div className="font-mono text-[8px] text-slate-500 mt-0.5 tracking-widest">{m.subtitle.toUpperCase()}</div>
+              {/* Top Banner Meta */}
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-4">
+                <div className="flex items-center gap-2">
+                  <span className="px-2.5 py-0.5 bg-cyan-950/80 border border-cyan-400/40 text-cyan-300 text-[10px] rounded font-bold">
+                    0{idx + 1} // FEATURED
+                  </span>
+                  <span className="text-[10px] text-slate-400 uppercase font-mono">
+                    {project.category}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  {project.github && (
+                    <a
+                      href={project.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-slate-400 hover:text-cyan-300 text-xs flex items-center gap-1 transition-colors"
+                      aria-label={`${project.title} GitHub repo`}
+                    >
+                      <Github size={14} /> GITHUB
+                    </a>
+                  )}
+                  <Link
+                    to={`/projects/${project.slug}`}
+                    onClick={() => spaceAudio.playClick()}
+                    className="inline-flex items-center gap-1.5 px-3 py-1 bg-cyan-500 text-slate-950 hover:bg-cyan-400 text-xs font-bold rounded transition-colors"
+                  >
+                    READ CASE STUDY <ArrowRight size={12} />
+                  </Link>
+                </div>
               </div>
-              <span className="text-[10px] opacity-25 group-hover:opacity-100 transition-opacity">🛡️</span>
-            </button>
-          );
-        })}
+
+              {/* Title & Subtitle */}
+              <div>
+                <h3
+                  className="text-2xl sm:text-3xl font-black text-white group-hover:text-cyan-300 transition-colors"
+                  style={{ fontFamily: 'var(--font-display)' }}
+                >
+                  {project.title}
+                </h3>
+                <div className="text-sm font-sans font-semibold text-cyan-400 mt-1">
+                  {project.subtitle}
+                </div>
+                <p className="text-xs sm:text-sm text-slate-300 font-sans leading-relaxed mt-3 max-w-4xl">
+                  {project.description}
+                </p>
+              </div>
+
+              {/* Problem, Context & Role Breakdown */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-sans">
+                <div className="p-3.5 rounded bg-slate-950/70 border border-slate-800/80 flex flex-col gap-1.5">
+                  <span className="text-[10px] font-mono text-pink-400 font-bold uppercase tracking-wider">
+                    // THE PROBLEM
+                  </span>
+                  <p className="text-slate-300 text-[11px] leading-relaxed">{project.problem}</p>
+                </div>
+
+                <div className="p-3.5 rounded bg-slate-950/70 border border-slate-800/80 flex flex-col gap-1.5">
+                  <span className="text-[10px] font-mono text-cyan-400 font-bold uppercase tracking-wider">
+                    // CONTEXT
+                  </span>
+                  <p className="text-slate-300 text-[11px] leading-relaxed">{project.context}</p>
+                </div>
+
+                <div className="p-3.5 rounded bg-slate-950/70 border border-slate-800/80 flex flex-col gap-1.5">
+                  <span className="text-[10px] font-mono text-green-400 font-bold uppercase tracking-wider">
+                    // MY ROLE
+                  </span>
+                  <p className="text-slate-300 text-[11px] leading-relaxed">{project.myRole}</p>
+                </div>
+              </div>
+
+              {/* Visual Architecture Schematic Box */}
+              {project.architectureDiagram && (
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center justify-between text-[10px] text-slate-400">
+                    <span className="text-yellow-400 font-bold uppercase">// SYSTEM ARCHITECTURE SCHEMATIC</span>
+                    <span>FLOW DIAGRAM</span>
+                  </div>
+                  <div className="p-4 rounded bg-slate-950 border border-slate-800 text-[11px] text-cyan-300 font-mono overflow-x-auto leading-relaxed">
+                    <pre className="whitespace-pre">{project.architectureDiagram}</pre>
+                  </div>
+                </div>
+              )}
+
+              {/* Special Document Engine Feature on DIZCLSR card */}
+              {project.id === 'dizclsr' && (
+                <div className="mt-2">
+                  <DocumentEngineSection />
+                </div>
+              )}
+
+              {/* Challenges, Solution & Results */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-sans">
+                <div className="p-3.5 rounded bg-slate-950/70 border border-slate-800/80 flex flex-col gap-1.5">
+                  <span className="text-[10px] font-mono text-orange-400 font-bold uppercase tracking-wider">
+                    // ENGINEERING CHALLENGES
+                  </span>
+                  <p className="text-slate-300 text-[11px] leading-relaxed">{project.challenges}</p>
+                </div>
+
+                <div className="p-3.5 rounded bg-slate-950/70 border border-slate-800/80 flex flex-col gap-1.5">
+                  <span className="text-[10px] font-mono text-purple-400 font-bold uppercase tracking-wider">
+                    // IMPLEMENTATION & RESULTS
+                  </span>
+                  <p className="text-slate-300 text-[11px] leading-relaxed">
+                    {project.solution} {project.results}
+                  </p>
+                </div>
+              </div>
+
+              {/* Verified Metrics Strip if Available */}
+              {project.metrics && project.metrics.length > 0 && (
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+                  {project.metrics.map((m, mIdx) => (
+                    <div
+                      key={mIdx}
+                      className="p-3 rounded bg-slate-950/90 border border-cyan-500/20 flex flex-col"
+                    >
+                      <span className="text-[9px] text-slate-400 uppercase truncate">{m.label}</span>
+                      <span
+                        className="text-lg font-black text-cyan-300"
+                        style={{ fontFamily: 'var(--font-display)' }}
+                      >
+                        {m.value}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Technologies Strip */}
+              <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-800/80">
+                <div className="flex flex-wrap gap-1.5">
+                  {project.tech.map((t) => (
+                    <span
+                      key={t}
+                      className="text-[9px] px-2 py-0.5 bg-slate-950 border border-slate-800 text-slate-300 rounded font-mono"
+                    >
+                      {t}
+                    </span>
+                  ))}
+                </div>
+
+                <Link
+                  to={`/projects/${project.slug}`}
+                  onClick={() => spaceAudio.playClick()}
+                  className="text-xs text-cyan-400 hover:text-cyan-300 inline-flex items-center gap-1 font-bold"
+                >
+                  VIEW FULL ARCHITECTURE BREAKDOWN <ArrowRight size={12} />
+                </Link>
+              </div>
+            </motion.article>
+          ))}
+        </div>
       </div>
 
-      {/* Right panel: Active Mission Details */}
-      <div
-        className="hud-panel p-6 overflow-y-auto flex flex-col gap-5 max-h-[60vh] lg:max-h-[82vh]"
-        style={{ border: '1px solid rgba(var(--cyber-cyan-rgb), 0.25)' }}
-      >
-        {/* Mission top banner */}
-        <div className="flex justify-between items-start border-b border-slate-900 pb-4">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <span className="px-2 py-0.5 bg-cyan-900/50 border border-cyan-500/40 text-cyan-400 font-mono text-[8px] tracking-widest rounded-sm">
-                PROJECT ACTIVE
-              </span>
-              <span className="text-slate-600 font-mono text-[9px]">FILE://{activeMission.id}.obj</span>
-            </div>
-            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 900, color: 'var(--cyber-cyan)' }}>
-              {activeMission.title}
-            </h2>
-            <p className="font-mono text-[10px] text-slate-400 tracking-wider uppercase mt-1">
-              Objective: {activeMission.subtitle}
-            </p>
+      {/* TIER 2: OTHER NOTABLE PROJECTS */}
+      <div className="flex flex-col gap-6 pt-4">
+        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-3">
+          <div className="flex items-center gap-2 text-xs font-bold text-slate-300 tracking-wider">
+            <Layers size={14} className="text-purple-400" />
+            TIER 2 // OTHER NOTABLE ENGINEERING PROJECTS
           </div>
 
-          <div className="flex gap-2">
-            <a
-              href={activeMission.github}
-              target="_blank"
-              rel="noopener noreferrer"
-              onMouseEnter={() => spaceAudio.playHover()}
-              className="p-2 border border-slate-800 hover:border-cyan-500/40 text-slate-400 hover:text-cyan-400 rounded transition-colors cursor-none bg-slate-950/60"
-            >
-              <GitPullRequest size={14} />
-            </a>
-            {activeMission.demo && (
-              <a
-                href={activeMission.demo}
-                target="_blank"
-                rel="noopener noreferrer"
-                onMouseEnter={() => spaceAudio.playHover()}
-                className="p-2 bg-cyan-500 hover:bg-cyan-400 text-slate-950 rounded transition-colors cursor-none flex items-center gap-1.5 font-mono text-[9px] font-bold"
+          {/* Filter Pills */}
+          <div className="flex flex-wrap gap-1.5">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => {
+                  spaceAudio.playClick();
+                  setFilterCategory(cat);
+                }}
+                className={`px-2.5 py-1 text-[10px] rounded transition-colors font-mono ${
+                  filterCategory === cat
+                    ? 'bg-cyan-500 text-slate-950 font-bold'
+                    : 'bg-slate-950 border border-slate-800 text-slate-400 hover:text-slate-200'
+                }`}
               >
-                <ExternalLink size={11} /> LIVE DEMO
-              </a>
-            )}
+                {cat}
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* Dynamic Canvas System Blueprint */}
-        <BlueprintVisualizer nodes={activeMission.nodes} />
+        {/* 3-Column Grid for Tier 2 Projects */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <AnimatePresence>
+            {filteredOther.map((project) => (
+              <motion.div
+                key={project.id}
+                layout
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.98 }}
+                onMouseEnter={() => spaceAudio.playHover()}
+                className="hud-panel p-5 flex flex-col justify-between border border-slate-800 hover:border-slate-700 transition-colors group"
+              >
+                <div>
+                  <div className="flex items-center justify-between text-[9px] text-slate-400 font-mono mb-2">
+                    <span className="text-cyan-400 uppercase font-bold">{project.category}</span>
+                    {project.github && (
+                      <a
+                        href={project.github}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-slate-400 hover:text-cyan-300 transition-colors"
+                        aria-label={`${project.title} GitHub`}
+                      >
+                        <Github size={13} />
+                      </a>
+                    )}
+                  </div>
 
-        {/* Detailed mission logs */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 font-mono text-[10px] leading-relaxed">
-          <div className="border border-slate-900/60 p-4 bg-slate-950/40 rounded flex flex-col gap-2">
-            <span className="text-pink-500 tracking-wider border-b border-slate-900 pb-1 mb-1 font-bold">
-              [THE PROBLEM]
-            </span>
-            <span className="text-slate-300">{activeMission.problem}</span>
-          </div>
+                  <h4 className="text-base font-bold text-white group-hover:text-cyan-300 transition-colors font-sans mb-1">
+                    {project.title}
+                  </h4>
+                  <div className="text-[10px] text-slate-400 font-mono mb-2.5">{project.subtitle}</div>
 
-          <div className="border border-slate-900/60 p-4 bg-slate-950/40 rounded flex flex-col gap-2">
-            <span className="text-cyan-400 tracking-wider border-b border-slate-900 pb-1 mb-1 font-bold">
-              [THE ARCHITECTURE]
-            </span>
-            <span className="text-slate-300">{activeMission.architecture}</span>
-          </div>
+                  <p className="text-xs text-slate-300 font-sans leading-relaxed mb-4">
+                    {project.description}
+                  </p>
+                </div>
 
-          <div className="border border-slate-900/60 p-4 bg-slate-950/40 rounded flex flex-col gap-2">
-            <span className="text-orange-400 tracking-wider border-b border-slate-900 pb-1 mb-1 font-bold">
-              [TECHNICAL CHALLENGES]
-            </span>
-            <span className="text-slate-300">{activeMission.challenges}</span>
-          </div>
+                <div className="border-t border-slate-800/80 pt-3">
+                  <div className="flex flex-wrap gap-1 mb-3">
+                    {project.primaryTech.map((t) => (
+                      <span
+                        key={t}
+                        className="text-[9px] px-1.5 py-0.5 bg-slate-950 border border-slate-800 text-slate-300 rounded font-mono"
+                      >
+                        {t}
+                      </span>
+                    ))}
+                  </div>
 
-          <div className="border border-slate-900/60 p-4 bg-slate-950/40 rounded flex flex-col gap-2">
-            <span className="text-green-400 tracking-wider border-b border-slate-900 pb-1 mb-1 font-bold">
-              [RESULTS & IMPACT]
-            </span>
-            <span className="text-slate-300 flex items-start gap-2">
-              <CheckCircle size={12} className="text-green-400 mt-0.5 flex-shrink-0" />
-              {activeMission.impact}
-            </span>
-          </div>
-        </div>
-
-        {/* Tech Stack inventory tags */}
-        <div className="border-t border-slate-900 pt-4 flex flex-wrap gap-2 items-center">
-          <FileCode size={13} className="text-slate-500" />
-          <span className="font-mono text-[9px] text-slate-500 tracking-widest uppercase mr-2">TECH STACK:</span>
-          {activeMission.tech.map((t) => (
-            <span
-              key={t}
-              className="px-2.5 py-1 bg-slate-900 border border-slate-800 text-cyan-400 font-mono text-[9px] tracking-wider rounded-sm hover:border-cyan-500/30 transition-all"
-            >
-              {t}
-            </span>
-          ))}
+                  <div className="text-[10px] text-slate-400 font-sans leading-snug">
+                    <strong className="text-slate-300 font-mono">Impact: </strong>
+                    {project.results}
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </div>
       </div>
     </div>

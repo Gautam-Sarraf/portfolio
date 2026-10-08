@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://gautam-sarraf.github.io/sitemap.xml
+Sitemap: https://gautam-sarraf-portfolio.netlify.app/sitemap.xml

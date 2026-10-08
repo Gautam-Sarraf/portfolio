@@ -24,7 +24,7 @@ export const SKILL_PLANETS = [
 export const TIMELINE_STATIONS = [
   { label: 'CSE Student', year: '2022', z: 0, color: '#ffcc00' },
   { label: 'JOVAC Training', year: '2024', z: -20, color: '#00ff88' },
-  { label: 'Webninjaz Intern', year: '2025', z: -40, color: '#00f0ff' },
+  { label: 'Software Engineer', year: '2025', z: -40, color: '#00f0ff' },
 ];
 
 const SpaceCanvas: React.FC<SpaceCanvasProps> = ({
@@ -76,7 +76,8 @@ const SpaceCanvas: React.FC<SpaceCanvasProps> = ({
 
   // Initialize Three.js scene
   useEffect(() => {
-    if (!containerRef.current) return;
+    const container = containerRef.current;
+    if (!container) return;
 
     // Scene
     const scene = new THREE.Scene();
@@ -433,7 +434,7 @@ const SpaceCanvas: React.FC<SpaceCanvasProps> = ({
             }
           }
           break;
-        case 'timeline':
+        case 'timeline': {
           // Find selected station coordinates
           const activeStation = TIMELINE_STATIONS[selectedTimelineIndex];
           if (activeStation) {
@@ -449,6 +450,7 @@ const SpaceCanvas: React.FC<SpaceCanvasProps> = ({
             targetCameraLookAt.set(stationCurveX, stationCurveY, -50 + stationZOffset);
           }
           break;
+        }
         case 'contact':
           targetCameraPos.set(4 + mouseRef.current.x * 1.5, -2 + mouseRef.current.y * 1.5, 11);
           targetCameraLookAt.set(1.5, -0.5, 0);
@@ -476,18 +478,19 @@ const SpaceCanvas: React.FC<SpaceCanvasProps> = ({
     // Cleanup WebGL Context
     return () => {
       if (requestRef.current) cancelAnimationFrame(requestRef.current);
-      if (rendererRef.current && rendererRef.current.domElement) {
-        containerRef.current?.removeChild(rendererRef.current.domElement);
+      if (rendererRef.current && rendererRef.current.domElement && container) {
+        container.removeChild(rendererRef.current.domElement);
       }
       renderer.dispose();
       
-      scene.traverse((object: any) => {
-        if (object.geometry) object.geometry.dispose();
-        if (object.material) {
-          if (Array.isArray(object.material)) {
-            object.material.forEach((m) => m.dispose());
+      scene.traverse((object: THREE.Object3D) => {
+        const mesh = object as THREE.Mesh;
+        if (mesh.geometry) mesh.geometry.dispose();
+        if (mesh.material) {
+          if (Array.isArray(mesh.material)) {
+            mesh.material.forEach((m) => m.dispose());
           } else {
-            object.material.dispose();
+            mesh.material.dispose();
           }
         }
       });

@@ -1,316 +1,252 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
-import { Terminal, User, BookOpen, Briefcase, MapPin } from 'lucide-react';
+import {
+  Terminal,
+  Cpu,
+  Server,
+  Layers,
+  Database,
+  ShieldCheck,
+  RefreshCw,
+} from 'lucide-react';
+import { spaceAudio } from '../utils/audio';
 
-const TERMINAL_STEPS = [
+export interface SectionHeaderProps {
+  tag: string;
+  label: string;
+  title: string;
+  subtitle: string;
+  isInView?: boolean;
+}
+
+export const SectionHeader: React.FC<SectionHeaderProps> = ({
+  tag,
+  label,
+  title,
+  subtitle,
+}) => {
+  return (
+    <div className="flex flex-col gap-1 mb-8 font-mono">
+      <div className="flex items-center gap-2 text-[10px] text-cyan-400 font-bold uppercase tracking-widest">
+        <span>[{tag}]</span>
+        <span>// {label}</span>
+      </div>
+      <h2
+        className="text-2xl sm:text-3xl font-black text-white tracking-tight"
+        style={{ fontFamily: 'var(--font-display)' }}
+      >
+        {title}
+      </h2>
+      <p className="text-xs text-slate-400 font-sans">{subtitle}</p>
+    </div>
+  );
+};
+
+const WORK_DOMAINS = [
   {
-    cmd: 'whoami',
-    output: [
-      '> Gautam Sarraf',
-      '> Full Stack Developer | AI Engineer | Backend Architect',
-      '> Location: Birgunj, Nepal  |  University: GLA University, Mathura',
-      '> Status: Actively building software solutions',
-    ],
-    color: 'var(--cyber-green)',
+    icon: <Layers size={18} className="text-cyan-400" />,
+    name: 'Frontend',
+    desc: 'React, TypeScript, Next.js, Vite, Tailwind CSS, accessible component trees & responsive interaction.',
   },
   {
-    cmd: 'cat focus.txt',
-    output: [
-      '  [1] Full Stack Development — React, Node.js, TypeScript',
-      '  [2] AI Applications — LangChain, RAG, Vector DBs, Agents',
-      '  [3] Automation Systems — Python, FastAPI, Microservices',
-      '  [4] Backend Architecture — PostgreSQL, MongoDB, REST APIs',
-    ],
-    color: 'var(--cyber-cyan)',
+    icon: <Server size={18} className="text-purple-400" />,
+    name: 'Backend',
+    desc: 'Python, FastAPI, Node.js, Express, async I/O, OpenAPI schemas, and low-latency microservices.',
   },
   {
-    cmd: 'ls ./education',
-    output: [
-      '  📚 B.Tech Computer Science Engineering',
-      '  🏫 GLA University, Mathura, UP',
-      '  📅 Expected: May 2026  |  CPI: 7.63',
-      '  📖 Coursework: DSA, OS, SE, Web Dev, Algorithms',
-    ],
-    color: 'var(--cyber-yellow)',
+    icon: <Cpu size={18} className="text-pink-400" />,
+    name: 'AI & Agents',
+    desc: 'LangGraph multi-agent loops, LLM tool calling, RAG pipelines, embeddings & prompt orchestration.',
   },
   {
-    cmd: 'cat bio.md',
-    output: [
-      '  Motivated and detail-oriented developer with a strong foundation',
-      '  in full-stack development and AI engineering. Passionate about',
-      '  building efficient, scalable systems and continuously pushing',
-      '  the boundaries of what modern technology can achieve.',
-    ],
-    color: '#e0e8ff',
+    icon: <RefreshCw size={18} className="text-green-400" />,
+    name: 'Automation',
+    desc: 'Android device orchestration via ADB, UI verification, headless scrapers & retry workflows.',
+  },
+  {
+    icon: <Database size={18} className="text-yellow-400" />,
+    name: 'Data & Storage',
+    desc: 'PostgreSQL relational schemas, MongoDB document stores, FAISS vector indexing & ETL pipelines.',
+  },
+  {
+    icon: <ShieldCheck size={18} className="text-blue-400" />,
+    name: 'Infrastructure',
+    desc: 'Docker containerization, Linux environments, Git version control, background task workers.',
   },
 ];
 
-const About: React.FC = () => {
+const PHILOSOPHY_STEPS = [
+  {
+    step: '01',
+    name: 'Understand',
+    color: 'text-cyan-400',
+    desc: 'Ingest raw, unstructured documents, market feeds, or system states without biased assumptions.',
+  },
+  {
+    step: '02',
+    name: 'Reason',
+    color: 'text-purple-400',
+    desc: 'Evaluate data constraints, compute embeddings, and plan multi-step execution graphs.',
+  },
+  {
+    step: '03',
+    name: 'Act',
+    color: 'text-green-400',
+    desc: 'Execute deterministic operations, call APIs, extract tabular records, or interact with device interfaces.',
+  },
+  {
+    step: '04',
+    name: 'Verify',
+    color: 'text-yellow-400',
+    desc: 'Run programmatic schema audits, UI hierarchy inspections, and eliminate hallucinations before persisting.',
+  },
+  {
+    step: '05',
+    name: 'Recover',
+    color: 'text-orange-400',
+    desc: 'Gracefully handle transient network drops, rate limits, and drift via autonomous retry and failover watchdogs.',
+  },
+];
+
+export const About: React.FC = () => {
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, margin: '-100px' });
-  const [currentStep, setCurrentStep] = useState(0);
-  const [currentLine, setCurrentLine] = useState(0);
-  const [typedCmd, setTypedCmd] = useState('');
-  const [phase, setPhase] = useState<'typing' | 'output' | 'done'>('typing');
-  const [completedSteps, setCompletedSteps] = useState<number[]>([]);
-  const [started, setStarted] = useState(false);
-
-  useEffect(() => {
-    if (isInView && !started) setStarted(true);
-  }, [isInView]);
-
-  useEffect(() => {
-    if (!started || currentStep >= TERMINAL_STEPS.length) return;
-    const step = TERMINAL_STEPS[currentStep];
-
-    if (phase === 'typing') {
-      if (typedCmd.length < step.cmd.length) {
-        const t = setTimeout(() => setTypedCmd(step.cmd.slice(0, typedCmd.length + 1)), 60);
-        return () => clearTimeout(t);
-      } else {
-        const t = setTimeout(() => setPhase('output'), 300);
-        return () => clearTimeout(t);
-      }
-    }
-
-    if (phase === 'output') {
-      if (currentLine < step.output.length) {
-        const t = setTimeout(() => setCurrentLine(l => l + 1), 120);
-        return () => clearTimeout(t);
-      } else {
-        const t = setTimeout(() => {
-          setCompletedSteps(prev => [...prev, currentStep]);
-          setPhase('typing');
-          setTypedCmd('');
-          setCurrentLine(0);
-          setCurrentStep(s => s + 1);
-        }, 600);
-        return () => clearTimeout(t);
-      }
-    }
-  }, [started, currentStep, phase, typedCmd, currentLine]);
-
-  const stats = [
-    { icon: <User size={18} />, label: 'Name', value: 'Gautam Sarraf', color: 'var(--cyber-cyan)' },
-    { icon: <MapPin size={18} />, label: 'Location', value: 'Birgunj, Nepal', color: 'var(--cyber-green)' },
-    { icon: <BookOpen size={18} />, label: 'Education', value: 'B.Tech CSE, GLA Univ.', color: 'var(--cyber-yellow)' },
-    { icon: <Briefcase size={18} />, label: 'Focus', value: 'Full Stack + AI', color: 'var(--cyber-pink)' },
-  ];
+  const isInView = useInView(ref, { once: true, margin: '-50px' });
 
   return (
-    <section id="about" ref={ref} style={{ padding: '100px 24px', background: 'var(--bg-secondary)', position: 'relative', overflow: 'hidden' }}>
-      {/* Background glow */}
-      <div style={{
-        position: 'absolute', top: '50%', left: '10%', width: 400, height: 400,
-        background: 'radial-gradient(circle, rgba(var(--cyber-cyan-rgb),0.04) 0%, transparent 70%)',
-        transform: 'translateY(-50%)', pointerEvents: 'none',
-      }} />
-
-      <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-        {/* Section header */}
+    <div ref={ref} className="w-full flex flex-col gap-8 font-mono text-slate-200">
+      {/* Overview Card */}
+      <div
+        className="hud-panel p-6 md:p-8 border border-cyan-500/25"
+        style={{
+          background: 'linear-gradient(180deg, rgba(8, 10, 31, 0.85) 0%, rgba(3, 4, 15, 0.95) 100%)',
+        }}
+      >
         <SectionHeader
           tag="01"
-          label="ABOUT"
-          title="Developer Profile"
-          subtitle="Initializing system scan..."
-          isInView={isInView}
+          label="ABOUT ME"
+          title="Full Stack Engineer · AI & Backend Specialist"
+          subtitle="Architecting resilient software systems across the full product stack."
         />
 
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: 32,
-          marginTop: 60,
-          alignItems: 'start',
-        }}>
-          {/* Terminal window */}
-          <motion.div
-            initial={{ opacity: 0, x: -40 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.7, delay: 0.2 }}
-            style={{
-              background: 'rgba(5, 5, 16, 0.95)',
-              border: '1px solid rgba(var(--cyber-cyan-rgb), 0.2)',
-              borderRadius: 12,
-              overflow: 'hidden',
-              boxShadow: '0 0 40px rgba(var(--cyber-cyan-rgb), 0.05), 0 20px 60px rgba(0,0,0,0.5)',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 13,
-            }}
-          >
-            {/* Terminal title bar */}
-            <div style={{
-              display: 'flex', alignItems: 'center', gap: 8,
-              padding: '12px 16px',
-              background: 'rgba(255,255,255,0.03)',
-              borderBottom: '1px solid rgba(var(--cyber-cyan-rgb),0.1)',
-            }}>
-              <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#ff5f57' }} />
-              <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#febc2e' }} />
-              <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#28c840' }} />
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginLeft: 12, color: 'rgba(100,130,160,0.6)', fontSize: 11 }}>
-                <Terminal size={12} />
-                gautam@portfolio ~ bash
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 font-sans">
+          {/* Main Positioning Text */}
+          <div className="lg:col-span-2 flex flex-col gap-4 text-xs sm:text-sm text-slate-300 leading-relaxed">
+            <p className="bg-slate-950/60 p-4 rounded border border-slate-800/80 text-white font-medium">
+              I'm a <span className="text-cyan-300 font-bold">Full Stack Engineer</span> specializing in{' '}
+              <span className="text-purple-300 font-bold">AI and backend systems</span>. I build applications that combine modern frontend experiences with scalable APIs, intelligent automation, data pipelines, and AI-powered workflows.
+            </p>
+            <p className="text-slate-400">
+              Rather than viewing software as isolated layers, I bridge the entire lifecycle: from intuitive React interfaces to high-throughput FastAPI services, background worker pools, document parsing engines, and relational PostgreSQL persistence.
+            </p>
+            <p className="text-slate-400">
+              My engineering philosophy focuses on building robust systems that remain predictable under real-world constraints—handling unformatted PDF disclosures, rate-limited public APIs, and complex state synchronization with zero tolerance for silent failures.
+            </p>
+          </div>
+
+          {/* Quick Identity Block */}
+          <div className="p-4 rounded bg-slate-950/70 border border-slate-800 flex flex-col justify-between font-mono text-[11px]">
+            <div>
+              <div className="text-[10px] text-cyan-400 border-b border-slate-800 pb-2 mb-3 font-bold">
+                // SYSTEM IDENTIFIERS
+              </div>
+              <div className="flex flex-col gap-2.5">
+                <div className="flex justify-between">
+                  <span className="text-slate-500">OPERATOR:</span>
+                  <span className="text-white font-bold">Gautam Sarraf</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">ORIGIN:</span>
+                  <span className="text-slate-300">Birgunj, Nepal</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">ACADEMICS:</span>
+                  <span className="text-yellow-400 font-bold">B.Tech CSE (GLA Univ.)</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">STANDING:</span>
+                  <span className="text-green-400 font-bold">Dean's List · CPI 7.63</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">CURRENT STATUS:</span>
+                  <span className="text-cyan-400 font-bold">Software Engineer</span>
+                </div>
               </div>
             </div>
 
-            {/* Terminal content */}
-            <div style={{ padding: '20px 24px', minHeight: 360, lineHeight: 1.9 }}>
-              {/* Completed steps */}
-              {completedSteps.map(stepIdx => {
-                const s = TERMINAL_STEPS[stepIdx];
-                return (
-                  <div key={stepIdx} style={{ marginBottom: 20, opacity: 0.65 }}>
-                    <div style={{ color: 'var(--cyber-green)' }}>
-                      <span style={{ color: 'var(--cyber-pink)' }}>❯ </span>{s.cmd}
-                    </div>
-                    {s.output.map((line, li) => (
-                      <div key={li} style={{ color: s.color, fontSize: 12 }}>{line}</div>
-                    ))}
-                  </div>
-                );
-              })}
-
-              {/* Current step */}
-              {currentStep < TERMINAL_STEPS.length && (
-                <div>
-                  <div style={{ color: 'var(--cyber-green)' }}>
-                    <span style={{ color: 'var(--cyber-pink)' }}>❯ </span>
-                    {typedCmd}
-                    {phase === 'typing' && (
-                      <span style={{
-                        display: 'inline-block', width: 8, height: '1em',
-                        background: 'var(--cyber-cyan)', marginLeft: 1, verticalAlign: 'middle',
-                        animation: 'blink-cursor 0.7s step-end infinite',
-                      }} />
-                    )}
-                  </div>
-                  {TERMINAL_STEPS[currentStep].output.slice(0, currentLine).map((line, li) => (
-                    <div key={li} style={{ color: TERMINAL_STEPS[currentStep].color, fontSize: 12 }}>{line}</div>
-                  ))}
-                </div>
-              )}
-
-              {currentStep >= TERMINAL_STEPS.length && (
-                <div style={{ color: 'var(--cyber-green)', marginTop: 8 }}>
-                  <span style={{ color: 'var(--cyber-pink)' }}>❯ </span>
-                  <span style={{
-                    display: 'inline-block', width: 8, height: '1em',
-                    background: 'var(--cyber-green)', marginLeft: 1, verticalAlign: 'middle',
-                    animation: 'blink-cursor 0.7s step-end infinite',
-                  }} />
-                </div>
-              )}
+            <div className="border-t border-slate-800 pt-3 mt-3 text-[10px] text-slate-400 flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+              Active in Production Development
             </div>
-          </motion.div>
-
-          {/* Info cards */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-            {stats.map((stat, i) => (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, x: 40 }}
-                animate={isInView ? { opacity: 1, x: 0 } : {}}
-                transition={{ duration: 0.5, delay: 0.3 + i * 0.1 }}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 16,
-                  padding: '18px 24px',
-                  background: 'rgba(10, 10, 30, 0.8)',
-                  border: `1px solid ${stat.color}30`,
-                  borderRadius: 10,
-                  borderLeft: `3px solid ${stat.color}`,
-                  backdropFilter: 'blur(10px)',
-                }}
-              >
-                <div style={{ color: stat.color, flexShrink: 0 }}>{stat.icon}</div>
-                <div>
-                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-muted)', letterSpacing: '2px', marginBottom: 3 }}>
-                    {stat.label}
-                  </div>
-                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: stat.color }}>
-                    {stat.value}
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-
-            {/* Quick traits */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.5, delay: 0.8 }}
-              style={{
-                padding: '20px 24px',
-                background: 'rgba(10, 10, 30, 0.8)',
-                border: '1px solid rgba(var(--cyber-cyan-rgb),0.15)',
-                borderRadius: 10,
-              }}
-            >
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-muted)', letterSpacing: '2px', marginBottom: 14 }}>
-                CORE TRAITS
-              </div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                {['Problem Solver', 'Team Player', 'Fast Learner', 'Detail-Oriented', 'Self-Motivated', 'Creative'].map(trait => (
-                  <span key={trait} style={{
-                    padding: '5px 12px',
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 10,
-                    color: 'var(--cyber-cyan)',
-                    border: '1px solid rgba(var(--cyber-cyan-rgb),0.25)',
-                    borderRadius: 100,
-                    letterSpacing: '1px',
-                    background: 'rgba(var(--cyber-cyan-rgb),0.05)',
-                  }}>
-                    {trait}
-                  </span>
-                ))}
-              </div>
-            </motion.div>
           </div>
         </div>
       </div>
 
-      <style>{`@keyframes blink-cursor { 50% { opacity: 0; } }`}</style>
-    </section>
+      {/* Philosophy: Understand -> Reason -> Act -> Verify -> Recover */}
+      <div className="hud-panel p-6 border border-cyan-500/20">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3 mb-6">
+          <div className="flex items-center gap-2 text-xs font-bold text-white tracking-wider">
+            <Terminal size={14} className="text-cyan-400" />
+            ENGINEERING PHILOSOPHY // THE 5-STAGE SYSTEM LOOP
+          </div>
+          <span className="text-[10px] text-cyan-300 font-mono">DETERMINISTIC & RESILIENT</span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+          {PHILOSOPHY_STEPS.map((step, idx) => (
+            <motion.div
+              key={step.step}
+              initial={{ opacity: 0, y: 10 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ delay: idx * 0.1 }}
+              onMouseEnter={() => spaceAudio.playHover()}
+              className="p-3.5 rounded bg-slate-950/60 border border-slate-800 hover:border-cyan-400/50 transition-colors flex flex-col justify-between"
+            >
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-[10px] font-mono text-slate-500 font-bold">STAGE {step.step}</span>
+                  <span className={`text-xs font-bold font-mono ${step.color}`}>{step.name}</span>
+                </div>
+                <div className="h-0.5 w-full bg-slate-800 mb-2 mt-1">
+                  <div className={`h-full ${step.color.replace('text-', 'bg-')} w-2/3`} />
+                </div>
+                <p className="text-[11px] text-slate-400 font-sans leading-relaxed">
+                  {step.desc}
+                </p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+
+      {/* Cross-Stack Engineering Domains */}
+      <div className="hud-panel p-6 border border-slate-800">
+        <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
+          <div className="flex items-center gap-2 text-xs font-bold text-slate-200 tracking-wider">
+            <Cpu size={14} className="text-purple-400" />
+            CROSS-STACK SCOPE // TECHNICAL CAPABILITIES
+          </div>
+          <span className="text-[10px] text-slate-500 uppercase">END-TO-END BREADTH</span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {WORK_DOMAINS.map((domain, idx) => (
+            <div
+              key={idx}
+              className="p-4 rounded bg-slate-950/50 border border-slate-800/80 flex flex-col gap-1.5 hover:border-slate-700 transition-colors"
+            >
+              <div className="flex items-center gap-2 text-sm font-bold text-white font-sans">
+                {domain.icon}
+                <span>{domain.name}</span>
+              </div>
+              <p className="text-xs text-slate-400 font-sans leading-relaxed">
+                {domain.desc}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 };
-
-// Reusable section header component
-export const SectionHeader: React.FC<{
-  tag: string; label: string; title: string; subtitle: string; isInView: boolean;
-}> = ({ tag, label, title, subtitle, isInView }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 30 }}
-    animate={isInView ? { opacity: 1, y: 0 } : {}}
-    transition={{ duration: 0.6 }}
-    style={{ textAlign: 'center' }}
-  >
-    <div style={{
-      display: 'inline-flex', alignItems: 'center', gap: 12, marginBottom: 16,
-      fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '4px',
-      color: 'var(--text-muted)',
-    }}>
-      <span style={{ color: 'var(--cyber-cyan)' }}>{tag}.</span>
-      {label}
-      <span style={{ height: 1, width: 40, background: 'rgba(var(--cyber-cyan-rgb),0.3)', display: 'inline-block' }} />
-    </div>
-    <h2 style={{
-      fontFamily: 'var(--font-display)',
-      fontSize: 'clamp(28px, 5vw, 52px)',
-      fontWeight: 900,
-      letterSpacing: '-1px',
-      background: 'linear-gradient(135deg, #fff 0%, var(--cyber-cyan) 100%)',
-      WebkitBackgroundClip: 'text',
-      WebkitTextFillColor: 'transparent',
-      backgroundClip: 'text',
-      marginBottom: 12,
-    }}>
-      {title}
-    </h2>
-    <p style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--text-muted)', letterSpacing: '2px' }}>
-      {subtitle}
-    </p>
-  </motion.div>
-);
 
 export default About;

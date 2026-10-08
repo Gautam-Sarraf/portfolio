@@ -1,16 +1,47 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Send, Terminal, Mail, Github, Linkedin, MapPin, Radio, ShieldAlert } from 'lucide-react';
+import {
+  Send,
+  Terminal,
+  Mail,
+  Github,
+  Linkedin,
+  Download,
+} from 'lucide-react';
 import { spaceAudio } from '../utils/audio';
 
-const COMMS_INDEX = [
-  { icon: <Mail size={14} />, label: "EMAIL", value: "gautam.sarraf_cs22@gla.ac.in", href: "mailto:gautam.sarraf_cs22@gla.ac.in", color: "var(--cyber-cyan)" },
-  { icon: <Github size={14} />, label: "GITHUB", value: "github.com/gautam-sarraf", href: "https://github.com/gautam-sarraf", color: "var(--cyber-green)" },
-  { icon: <Linkedin size={14} />, label: "LINKEDIN", value: "linkedin.com/in/gautam-sarraf", href: "https://linkedin.com/in/gautam-sarraf", color: "var(--cyber-pink)" },
-  { icon: <MapPin size={14} />, label: "LOCATION", value: "Birgunj, Nepal", href: null, color: "var(--cyber-yellow)" },
+const CONTACT_CHANNELS = [
+  {
+    icon: <Mail size={16} className="text-cyan-400" />,
+    label: 'EMAIL',
+    value: 'gautam.sarraf_cs22@gla.ac.in',
+    href: 'mailto:gautam.sarraf_cs22@gla.ac.in',
+    desc: 'Direct communication for technical inquiries & opportunities',
+  },
+  {
+    icon: <Linkedin size={16} className="text-purple-400" />,
+    label: 'LINKEDIN',
+    value: 'linkedin.com/in/gautam-sarraf',
+    href: 'https://linkedin.com/in/gautam-sarraf',
+    desc: 'Professional network, career background & messaging',
+  },
+  {
+    icon: <Github size={16} className="text-green-400" />,
+    label: 'GITHUB',
+    value: 'github.com/gautam-sarraf',
+    href: 'https://github.com/gautam-sarraf',
+    desc: 'Open source repositories, prototypes & system code',
+  },
+  {
+    icon: <Download size={16} className="text-yellow-400" />,
+    label: 'RESUME',
+    value: 'Gautam_Sarraf_resume.pdf',
+    href: '/Gautam_Sarraf_resume.pdf',
+    download: true,
+    desc: 'Verified technical resume in downloadable PDF format',
+  },
 ];
 
-const Contact: React.FC = () => {
+export const Contact: React.FC = () => {
   const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
   const [transmissionLogs, setTransmissionLogs] = useState<string[]>([]);
@@ -35,12 +66,9 @@ const Contact: React.FC = () => {
 
     spaceAudio.playTransmission();
 
-    // Trigger sequencing logs
-    await addLog("INITIALIZING TRANSMISSION PROTOCOL...", 100);
-    await addLog("ENCRYPTING MESSAGE PAYLOAD...", 300);
-    await addLog(`PACKAGING SENDER DATA: ${formData.name.toUpperCase()}...`, 400);
-    await addLog("ROUTING CONNECTION TO HOST...", 300);
-    await addLog("SENDING MESSAGE PACKETS...", 400);
+    await addLog('INITIALIZING SECURE TRANSMISSION...', 80);
+    await addLog(`PACKAGING DISPATCH FOR: ${formData.name.toUpperCase()}...`, 150);
+    await addLog('ROUTING DISPATCH VIA WEB PROTOCOL...', 200);
 
     const fd = new FormData();
     fd.append('access_key', '86f2f3a0-cdc8-438d-b6d4-634e52b87631');
@@ -49,255 +77,215 @@ const Contact: React.FC = () => {
     try {
       const res = await fetch('https://api.web3forms.com/submit', { method: 'POST', body: fd });
       const data = await res.json();
-      
+
       if (data.success) {
         setStatus('success');
-        spaceAudio.playBoot(); // Play success chime
-        await addLog("TRANSMISSION SUCCESS. MESSAGE CONFIRMED.", 200);
-        await addLog("CONNECTION CLOSED.", 100);
+        spaceAudio.playBoot();
+        await addLog('TRANSMISSION DELIVERED CONFIRMED [OK].', 150);
+        await addLog('I will respond within 24 hours.', 100);
         setFormData({ name: '', email: '', subject: '', message: '' });
       } else {
         setStatus('error');
-        await addLog("TRANSMISSION ERROR. SENT BLOCKED.", 200);
+        await addLog('TRANSMISSION GATEWAY ERROR. PLEASE EMAIL DIRECTLY.', 150);
       }
     } catch {
       setStatus('error');
-      await addLog("TRANSMISSION FAILED. NETWORK OFFLINE.", 200);
+      await addLog('NETWORK ERROR. PLEASE EMAIL: gautam.sarraf_cs22@gla.ac.in', 150);
     }
   };
 
   return (
-    <div
-      style={{
-        width: '100%',
-        height: '100%',
-        display: 'grid',
-        gridTemplateColumns: '1.2fr 1.8fr',
-        gap: 20,
-        padding: '24px',
-        overflow: 'hidden',
-      }}
-      className="flex flex-col lg:grid"
-    >
-      {/* Left panel: Comm coordinates + log output */}
+    <div className="w-full flex flex-col gap-8 font-mono text-slate-200">
+      {/* Header with requested CTA */}
       <div
-        className="flex flex-col gap-4 overflow-y-auto max-h-[40vh] lg:max-h-[82vh]"
+        className="hud-panel p-6 md:p-8 border border-cyan-500/25 flex flex-col gap-3"
+        style={{
+          background: 'linear-gradient(180deg, rgba(8, 10, 31, 0.9) 0%, rgba(3, 4, 15, 0.95) 100%)',
+        }}
       >
-        {/* Comms channels list */}
-        <div
-          className="hud-panel p-4 flex flex-col gap-2.5"
-          style={{ border: '1px solid rgba(var(--cyber-cyan-rgb), 0.25)' }}
-        >
-          <div className="font-mono text-[10px] tracking-wider text-slate-400 border-b border-slate-900 pb-2 mb-1 flex items-center gap-2">
-            <Radio size={12} className="text-cyan-400 animate-pulse" />
-            CONTACT CHANNELS
-          </div>
-          {COMMS_INDEX.map((c, idx) => (
-            <div
-              key={idx}
-              style={{
-                borderLeft: `3px solid ${c.color}`,
-                background: 'rgba(3,4,15,0.4)',
-              }}
-              className="p-2.5 rounded flex gap-3 items-center font-mono text-[10px] hover:bg-slate-950/60 transition-colors"
-            >
-              <div style={{ color: c.color }} className="flex-shrink-0">
-                {c.icon}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="text-slate-500 text-[8px] tracking-widest">{c.label}</div>
-                {c.href ? (
-                  <a
-                    href={c.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onMouseEnter={() => spaceAudio.playHover()}
-                    style={{ color: c.color }}
-                    className="font-bold truncate block cursor-none"
-                  >
-                    {c.value.toUpperCase()}
-                  </a>
-                ) : (
-                  <span style={{ color: c.color }} className="font-bold truncate block">
-                    {c.value.toUpperCase()}
-                  </span>
-                )}
-              </div>
-            </div>
-          ))}
+        <div className="text-[10px] text-cyan-400 font-bold uppercase tracking-widest">
+          // COMMS LINK [05]
         </div>
-
-        {/* Real-time terminal log outputs */}
-        <div
-          className="hud-panel p-4 flex-1 flex flex-col gap-2 min-h-36 max-h-48 lg:max-h-none overflow-y-auto"
-          style={{ border: '1px solid rgba(var(--cyber-cyan-rgb), 0.25)' }}
+        <h2
+          className="text-2xl sm:text-4xl font-black text-white"
+          style={{ fontFamily: 'var(--font-display)' }}
         >
-          <div className="font-mono text-[10px] tracking-wider text-slate-400 border-b border-slate-900 pb-2 mb-1 flex items-center gap-2">
-            <Terminal size={12} className="text-cyan-400" />
-            TRANSMISSION CONSOLE
-          </div>
-          <div className="flex-1 overflow-y-auto font-mono text-[9px] text-slate-400 flex flex-col gap-1.5 leading-relaxed">
-            {transmissionLogs.length === 0 ? (
-              <span className="text-slate-600 italic">Awaiting message submission... console idle.</span>
-            ) : (
-              transmissionLogs.map((log, idx) => (
-                <div key={idx} className="flex gap-2">
-                  <span className="text-cyan-500">&gt;&nbsp;</span>
-                  <span className={log.includes('SUCCESS') ? 'text-green-400 font-bold' : log.includes('ERROR') ? 'text-orange-400 font-bold' : 'text-slate-300'}>
-                    {log}
-                  </span>
-                </div>
-              ))
-            )}
-          </div>
+          Have a project, opportunity, or interesting problem?
+        </h2>
+        <div className="text-xl sm:text-2xl font-bold text-cyan-400 font-sans">
+          Let's talk.
         </div>
+        <p className="text-xs sm:text-sm text-slate-300 font-sans leading-relaxed max-w-2xl">
+          Whether you want to discuss production AI agents, document intelligence engines, high-concurrency backend services, or full-stack web applications, feel free to connect directly.
+        </p>
       </div>
 
-      {/* Right panel: Cockpit Form console */}
-      <div
-        className="hud-panel p-6 overflow-y-auto max-h-[60vh] lg:max-h-[82vh]"
-        style={{ border: '1px solid rgba(var(--cyber-cyan-rgb), 0.25)' }}
-      >
-        <div className="font-mono text-[10px] tracking-wider text-slate-400 border-b border-slate-900 pb-3 mb-4 flex items-center gap-2">
-          <ShieldAlert size={12} className="text-cyan-400 animate-pulse" />
-          MESSAGE SENDER
+      {/* Grid: Direct Contact Channels & Transmission Terminal Form */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Left Column: Direct Channels */}
+        <div className="lg:col-span-5 flex flex-col gap-3">
+          <div className="text-[10px] text-cyan-400 font-bold tracking-wider uppercase border-b border-slate-800 pb-2">
+            // DIRECT COMMUNICATION CHANNELS
+          </div>
+
+          <div className="flex flex-col gap-3">
+            {CONTACT_CHANNELS.map((ch, idx) => (
+              <a
+                key={idx}
+                href={ch.href}
+                target={ch.download ? undefined : '_blank'}
+                rel={ch.download ? undefined : 'noopener noreferrer'}
+                download={ch.download ? 'Gautam_Sarraf_resume.pdf' : undefined}
+                onMouseEnter={() => spaceAudio.playHover()}
+                onClick={() => spaceAudio.playClick()}
+                className="p-4 rounded bg-slate-950/70 border border-slate-800 hover:border-cyan-400/60 transition-all flex flex-col gap-1.5 group"
+              >
+                <div className="flex items-center justify-between text-[10px]">
+                  <span className="font-bold text-slate-400 font-mono flex items-center gap-2">
+                    {ch.icon}
+                    <span>{ch.label}</span>
+                  </span>
+                  <span className="text-slate-600 group-hover:text-cyan-400 transition-colors">
+                    {ch.download ? 'DOWNLOAD PDF' : 'CONNECT →'}
+                  </span>
+                </div>
+
+                <div className="text-sm font-bold text-white group-hover:text-cyan-300 transition-colors truncate">
+                  {ch.value}
+                </div>
+                <div className="text-[11px] text-slate-400 font-sans leading-relaxed">
+                  {ch.desc}
+                </div>
+              </a>
+            ))}
+          </div>
+
+          {/* Quick Location & Availability */}
+          <div className="p-4 rounded bg-slate-950 border border-slate-800/80 text-[11px] flex flex-col gap-2">
+            <div className="flex justify-between text-slate-400">
+              <span>LOCATION:</span>
+              <span className="text-white font-bold">Birgunj, Nepal · GLA University</span>
+            </div>
+            <div className="flex justify-between text-slate-400">
+              <span>TIMEZONE:</span>
+              <span className="text-cyan-300 font-mono">UTC +05:30 (IST / NPT)</span>
+            </div>
+            <div className="flex justify-between text-slate-400">
+              <span>AVAILABILITY:</span>
+              <span className="text-green-400 font-bold">Open to Software Engineering Roles</span>
+            </div>
+          </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4 font-mono text-[10px]">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Right Column: Transmission Form & Terminal Feedback */}
+        <div className="lg:col-span-7">
+          <form
+            onSubmit={handleSubmit}
+            className="hud-panel p-6 md:p-8 border border-cyan-500/25 flex flex-col gap-4"
+            style={{
+              background: 'linear-gradient(180deg, rgba(8, 10, 31, 0.9) 0%, rgba(3, 4, 15, 0.96) 100%)',
+            }}
+          >
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-1">
+              <div className="flex items-center gap-2 text-xs font-bold text-white tracking-wider">
+                <Terminal size={14} className="text-cyan-400" />
+                TRANSMISSION TERMINAL // DIRECT MESSAGE
+              </div>
+              <span className="text-[10px] text-slate-500 uppercase">ENCRYPTED PAYLOAD</span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[10px] text-slate-400 uppercase font-mono font-bold">
+                  SENDER NAME *
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  required
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  placeholder="e.g. Jane Doe"
+                  className="px-3.5 py-2.5 rounded bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-cyan-400 font-mono"
+                />
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[10px] text-slate-400 uppercase font-mono font-bold">
+                  SENDER EMAIL *
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  required
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  placeholder="e.g. jane@company.com"
+                  className="px-3.5 py-2.5 rounded bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-cyan-400 font-mono"
+                />
+              </div>
+            </div>
+
             <div className="flex flex-col gap-1.5">
-              <label className="text-cyan-400 tracking-widest font-bold">YOUR NAME</label>
+              <label className="text-[10px] text-slate-400 uppercase font-mono font-bold">
+                SUBJECT / TOPIC
+              </label>
               <input
                 type="text"
-                name="name"
-                value={formData.name}
+                name="subject"
+                value={formData.subject}
                 onChange={handleInputChange}
-                required
-                placeholder="Enter your name"
-                style={{
-                  width: '100%',
-                  padding: '10px 12px',
-                  background: 'rgba(3,4,15,0.8)',
-                  border: '1px solid rgba(var(--cyber-cyan-rgb), 0.2)',
-                  borderRadius: 4,
-                  color: 'var(--text-primary)',
-                  outline: 'none',
-                  fontSize: 10,
-                }}
-                className="focus:border-cyan-400 focus:shadow-[0_0_8px_rgba(var(--cyber-cyan-rgb),0.2)] transition-all placeholder-slate-700 uppercase"
+                placeholder="e.g. AI Systems Role / Contract Collaboration"
+                className="px-3.5 py-2.5 rounded bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-cyan-400 font-mono"
               />
             </div>
+
             <div className="flex flex-col gap-1.5">
-              <label className="text-cyan-400 tracking-widest font-bold">YOUR EMAIL</label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
+              <label className="text-[10px] text-slate-400 uppercase font-mono font-bold">
+                MESSAGE BODY *
+              </label>
+              <textarea
+                name="message"
                 required
-                placeholder="your.email@example.com"
-                style={{
-                  width: '100%',
-                  padding: '10px 12px',
-                  background: 'rgba(3,4,15,0.8)',
-                  border: '1px solid rgba(var(--cyber-cyan-rgb), 0.2)',
-                  borderRadius: 4,
-                  color: 'var(--text-primary)',
-                  outline: 'none',
-                  fontSize: 10,
-                }}
-                className="focus:border-cyan-400 focus:shadow-[0_0_8px_rgba(var(--cyber-cyan-rgb),0.2)] transition-all placeholder-slate-700"
+                rows={4}
+                value={formData.message}
+                onChange={handleInputChange}
+                placeholder="Share project requirements, team context, or technical challenges..."
+                className="px-3.5 py-2.5 rounded bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-cyan-400 font-mono resize-none leading-relaxed"
               />
             </div>
-          </div>
 
-          <div className="flex flex-col gap-1.5">
-            <label className="text-cyan-400 tracking-widest font-bold">SUBJECT</label>
-            <input
-              type="text"
-              name="subject"
-              value={formData.subject}
-              onChange={handleInputChange}
-              required
-              placeholder="Subject of your message"
-              style={{
-                width: '100%',
-                padding: '10px 12px',
-                background: 'rgba(3,4,15,0.8)',
-                border: '1px solid rgba(var(--cyber-cyan-rgb), 0.2)',
-                borderRadius: 4,
-                color: 'var(--text-primary)',
-                outline: 'none',
-                fontSize: 10,
-              }}
-              className="focus:border-cyan-400 focus:shadow-[0_0_8px_rgba(var(--cyber-cyan-rgb),0.2)] transition-all placeholder-slate-700 uppercase"
-            />
-          </div>
+            <button
+              type="submit"
+              disabled={status === 'sending'}
+              onMouseEnter={() => spaceAudio.playHover()}
+              className="mt-2 flex items-center justify-center gap-2 px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs rounded transition-all disabled:opacity-50 shadow-[0_0_15px_rgba(0,255,216,0.25)]"
+            >
+              <Send size={14} />
+              <span>{status === 'sending' ? 'TRANSMITTING MESSAGE...' : 'SEND TRANSMISSION'}</span>
+            </button>
 
-          <div className="flex flex-col gap-1.5">
-            <label className="text-cyan-400 tracking-widest font-bold">MESSAGE</label>
-            <textarea
-              name="message"
-              value={formData.message}
-              onChange={handleInputChange}
-              required
-              placeholder="Type your message here..."
-              rows={4}
-              style={{
-                width: '100%',
-                padding: '10px 12px',
-                background: 'rgba(3,4,15,0.8)',
-                border: '1px solid rgba(var(--cyber-cyan-rgb), 0.2)',
-                borderRadius: 4,
-                color: 'var(--text-primary)',
-                outline: 'none',
-                fontSize: 10,
-                resize: 'none',
-              }}
-              className="focus:border-cyan-400 focus:shadow-[0_0_8px_rgba(var(--cyber-cyan-rgb),0.2)] transition-all placeholder-slate-700"
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={status === 'sending'}
-            onMouseEnter={() => spaceAudio.playHover()}
-            style={{
-              width: '100%',
-              padding: '12px',
-              border: 'none',
-              borderRadius: 4,
-              fontSize: 11,
-              fontWeight: 700,
-              letterSpacing: '2px',
-              cursor: status === 'sending' ? 'wait' : 'none',
-              color: '#000',
-              background: status === 'success'
-                ? 'linear-gradient(135deg, var(--cyber-green), #8b5cf6)'
-                : status === 'error'
-                ? 'linear-gradient(135deg, var(--cyber-pink), #9f004a)'
-                : 'linear-gradient(135deg, var(--cyber-cyan), var(--cyber-green))',
-              boxShadow: '0 0 15px rgba(var(--cyber-cyan-rgb), 0.2)',
-              transition: 'all 0.2s',
-            }}
-            className="flex items-center justify-center gap-2 hover:shadow-[0_0_20px_rgba(var(--cyber-cyan-rgb), 0.4)]"
-          >
-            {status === 'sending' ? (
-              <>
-                <div className="w-3.5 h-3.5 border-2 border-black border-t-transparent rounded-full animate-spin" />
-                SENDING MESSAGE...
-              </>
-            ) : status === 'success' ? (
-              "MESSAGE SENT ✓"
-            ) : status === 'error' ? (
-              "ERROR - RETRY ✗"
-            ) : (
-              <>
-                <Send size={12} /> SEND MESSAGE
-              </>
+            {/* Terminal Transmission Logs Output */}
+            {transmissionLogs.length > 0 && (
+              <div className="mt-2 p-3 rounded bg-slate-950 border border-slate-800/80 text-[10px] font-mono flex flex-col gap-1 text-slate-400 max-h-32 overflow-y-auto">
+                {transmissionLogs.map((log, lIdx) => (
+                  <div
+                    key={lIdx}
+                    className={
+                      log.includes('[OK]') || log.includes('SUCCESS')
+                        ? 'text-green-400'
+                        : log.includes('ERROR')
+                        ? 'text-red-400'
+                        : 'text-cyan-300'
+                    }
+                  >
+                    {log}
+                  </div>
+                ))}
+              </div>
             )}
-          </button>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
   );

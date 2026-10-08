@@ -33,14 +33,28 @@
   --scroll-bar-thumb: rgba(0, 253, 216, 0.25);
 }
 
-html, body {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
+html {
+  min-height: 100%;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  overflow-x: hidden;
   font-family: var(--font-body);
   background: var(--bg-primary);
   color: var(--text-primary);
-  cursor: default; /* Native browser cursor */
+  cursor: default;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* Custom scrollbar for HUD panels */

@@ -14,7 +14,7 @@ class SpaceAudioSynth {
   private init() {
     if (this.ctx) return;
     try {
-      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+      const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
       this.ctx = new AudioCtx();
       
       this.masterVolume = this.ctx.createGain();

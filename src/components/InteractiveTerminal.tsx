@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Terminal as TerminalIcon, X, Minimize2, Maximize2 } from 'lucide-react';
+import { Terminal as TerminalIcon, X, Minimize2 } from 'lucide-react';
 
 const COMMANDS: Record<string, string[]> = {
   help: [

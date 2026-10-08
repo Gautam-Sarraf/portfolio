@@ -1,26 +1,39 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Mic, Send, MessageSquare, Power, VolumeX, Volume2 } from 'lucide-react';
+import { Mic, Send, Power } from 'lucide-react';
 import { spaceAudio } from '../utils/audio';
 
 interface AiAssistantProps {
   audioMuted: boolean;
 }
 
+interface SpeechRecognitionInstance {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  onstart: () => void;
+  onresult: (e: { results: { [key: number]: { [key: number]: { transcript: string } } } }) => void;
+  onerror: () => void;
+  onend: () => void;
+  start: () => void;
+  stop: () => void;
+}
+
 const QUICK_PROMPTS = [
   { text: "Who is Gautam?", query: "who is gautam" },
-  { text: "Show AI projects", query: "ai projects" },
-  { text: "Show Backend projects", query: "backend projects" },
-  { text: "What tech stack?", query: "tech stack" },
-  { text: "Get Resume link", query: "resume" },
+  { text: "Current Work (DIZCLSR)", query: "dizclsr" },
+  { text: "Flagship Project (CP-KYC)", query: "cp-kyc" },
+  { text: "Tech Stack & Skills", query: "tech stack" },
+  { text: "Get Resume Link", query: "resume" },
 ];
 
 const KNOWLEDGE_BASE: Record<string, string> = {
-  gautam: "Gautam Sarraf is a dedicated AI Engineer and Full Stack Developer. Specializing in RAG pipelines, AI Agents, scheduling engines, and high-performance Web systems, Gautam bridges the gap between deep learning APIs and production-ready applications.",
-  ai: "Gautam has shipped advanced AI systems including: [Resume Analyzer] (ATS score optimization tool using GPT nodes), [PDF Chatbot] (RAG architecture with vector databases), and [CP-KYC] (AI-driven document scraping agents).",
-  backend: "In backend engineering, Gautam has architected: [OT Scheduler] (shift scheduling logic), [TeamSphere] (WebSocket + WebRTC real-time chat), and enterprise REST APIs using Node.js, FastAPI, MongoDB, and PostgreSQL.",
-  tech: "Gautam's technological arsenal includes React, Next.js, TypeScript, Tailwind, Python, FastAPI, Node.js, Express, MongoDB, PostgreSQL, Vector Databases (FAISS, Chroma), OpenAI, LangChain, and Docker.",
-  resume: "You can download Gautam's professional resume here: [gautam_resume.pdf]",
+  gautam: "Gautam Sarraf is a Full Stack Engineer specializing in AI and backend systems. He builds production-grade AI systems, intelligent automation, scalable FastAPI services, and modern React interfaces.",
+  dizclsr: "DIZCLSR is a Financial Disclosure Intelligence Platform. Gautam built the backend infrastructure and the Python-powered Document Engine to extract, link, and analyze unstructured corporate filings from BSE/NSE under SEBI Regulation 30(11).",
+  ai: "Gautam's AI work includes [DIZCLSR] (Document Engine for financial disclosures), [CP-KYC] (LangGraph compliance automation with 40% speedup & 70% manual collection reduction), and [PDF Chatbot RAG] with source attribution.",
+  backend: "In backend systems, Gautam specializes in Python, FastAPI, PostgreSQL, asynchronous workers, BSE/NSE data pipelines, and distributed Android device orchestration infrastructure.",
+  frontend: "Gautam possesses genuine full-stack capability across React, TypeScript, Next.js, and Vite, taking applications from interactive interface to API to production deployment.",
+  tech: "Primary stack: Python, FastAPI, AI / LLMs, PostgreSQL, Node.js, React, TypeScript. Secondary: Next.js, MongoDB, Docker, Git, Linux, FAISS, and LangGraph.",
+  resume: "You can download Gautam's verified technical resume here: /Gautam_Sarraf_resume.pdf",
 };
 
 const AiAssistant: React.FC<AiAssistantProps> = ({ audioMuted }) => {
@@ -29,13 +42,17 @@ const AiAssistant: React.FC<AiAssistantProps> = ({ audioMuted }) => {
   const [isTyping, setIsTyping] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const recognitionRef = useRef<any>(null);
+  const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
 
   // Initialize SpeechRecognition if supported
   useEffect(() => {
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (SpeechRecognition) {
-      const rec = new SpeechRecognition();
+    const windowWithSpeech = window as unknown as {
+      SpeechRecognition?: new () => SpeechRecognitionInstance;
+      webkitSpeechRecognition?: new () => SpeechRecognitionInstance;
+    };
+    const SpeechRecognitionClass = windowWithSpeech.SpeechRecognition || windowWithSpeech.webkitSpeechRecognition;
+    if (SpeechRecognitionClass) {
+      const rec = new SpeechRecognitionClass();
       rec.continuous = false;
       rec.interimResults = false;
       rec.lang = 'en-US';
@@ -45,7 +62,7 @@ const AiAssistant: React.FC<AiAssistantProps> = ({ audioMuted }) => {
         setResponse('Listening...');
       };
 
-      rec.onresult = (e: any) => {
+      rec.onresult = (e) => {
         const text = e.results[0][0].transcript;
         setQuery(text);
         handleAsk(text);
@@ -62,6 +79,7 @@ const AiAssistant: React.FC<AiAssistantProps> = ({ audioMuted }) => {
 
       recognitionRef.current = rec;
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Animate the canvas visualizer
@@ -151,15 +169,24 @@ const AiAssistant: React.FC<AiAssistantProps> = ({ audioMuted }) => {
       if (!audioMuted && 'speechSynthesis' in window) {
         window.speechSynthesis.cancel();
         // Remove formatting brackets from speech
-        const speechText = botResponse.replace(/[\[\]]/g, '');
+        const speechText = botResponse.replace(/[[\]]/g, '');
         const utterance = new SpeechSynthesisUtterance(speechText);
         utterance.pitch = 0.95;
         utterance.rate = 1.05;
         window.speechSynthesis.speak(utterance);
       }
     } catch (error) {
-      console.error("Error communicating with chatbot API:", error);
-      setResponse("Communication offline. Failed to establish connection to the neural brain.");
+      console.warn("Remote chatbot API offline or sleeping, falling back to verified local neural index:", error);
+      const lower = userQuery.toLowerCase();
+      let matched = "Gautam Sarraf is a Full Stack Engineer specializing in AI and backend systems. He builds production AI systems, intelligent automation, scalable FastAPI services, and modern React interfaces.";
+      if (lower.includes("dizclsr") || lower.includes("disclosure")) matched = KNOWLEDGE_BASE.dizclsr;
+      else if (lower.includes("kyc") || lower.includes("compliance")) matched = KNOWLEDGE_BASE.cp_kyc || KNOWLEDGE_BASE.ai;
+      else if (lower.includes("ai") || lower.includes("agent") || lower.includes("rag")) matched = KNOWLEDGE_BASE.ai;
+      else if (lower.includes("backend") || lower.includes("fastapi") || lower.includes("python")) matched = KNOWLEDGE_BASE.backend;
+      else if (lower.includes("frontend") || lower.includes("react") || lower.includes("full stack")) matched = KNOWLEDGE_BASE.frontend;
+      else if (lower.includes("stack") || lower.includes("tech") || lower.includes("skill")) matched = KNOWLEDGE_BASE.tech;
+      else if (lower.includes("resume") || lower.includes("cv")) matched = KNOWLEDGE_BASE.resume;
+      setResponse(matched);
     } finally {
       setIsTyping(false);
     }
